@@ -1,67 +1,49 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charlie | Portfolio Cybersécurité</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Charlie Viguié — Portfolio</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <header>
-        <h1>Charlie</h1>
-        <p class="subtitle">Étudiant passionné par la cybersécurité</p>
+  <canvas id="matrix-canvas"></canvas>
 
-        <nav>
-            <a href="index.html">Accueil</a>
-            <a href="projets.html">Projets</a>
-            <a href="contact.html">Contact</a>
-        </nav>
-    </header>
+  <nav>
+    <a href="index.html" class="nav-logo">CV</a>
+    <ul class="nav-links">
+      <li><a href="index.html"   class="active">Accueil</a></li>
+      <li><a href="apropos.html"            >À propos</a></li>
+      <li><a href="projets.html"            >Projets</a></li>
+      <li><a href="contact.html"            >Contact</a></li>
+    </ul>
+  </nav>
 
-    <main>
-        <section>
-            <h2>À propos de moi</h2>
+  <main class="hero">
+    <p class="hero-label fade-in d1">$ whoami</p>
 
-            <p>
-                Bonjour et bienvenue sur mon portfolio.
-            </p>
+    <h1 class="glitch fade-in d2" data-text="Charlie Viguié">
+      Charlie <span class="accent">Viguié</span>
+    </h1>
 
-            <p>
-                Je suis étudiant et passionné par l'informatique,
-                particulièrement la cybersécurité. J'aime comprendre
-                le fonctionnement des systèmes, développer mes compétences
-                techniques et relever des défis à travers des projets personnels.
-            </p>
+    <p class="hero-sub fade-in d3">
+      Étudiant passionné par la <span class="accent">cybersécurité</span><br>
+      et le développement de projets techniques.
+    </p>
 
-            <p>
-                Vous trouverez ici mes projets, mes apprentissages
-                ainsi que mon évolution dans le domaine de la sécurité informatique.
-            </p>
-        </section>
+    <div class="hero-actions fade-in d4">
+      <a href="projets.html" class="btn btn-primary">Mes projets</a>
+      <a href="apropos.html" class="btn btn-ghost">En savoir plus</a>
+    </div>
 
-        <section>
-            <h2>Compétences en développement</h2>
+    <span class="scroll-hint fade-in d5">explorer</span>
+  </main>
 
-            <ul>
-                <li>🐧 Linux</li>
-                <li>🌐 Réseaux</li>
-                <li>🐍 Python</li>
-                <li>⚙️ Git & GitHub</li>
-                <li>🔐 Cybersécurité</li>
-            </ul>
-        </section>
+  <footer>
+    <p>© 2026 Charlie Viguié</p>
+  </footer>
 
-        <section>
-            <h2>Mon objectif</h2>
-
-            <p>
-                Continuer à progresser en cybersécurité, développer des projets
-                concrets et acquérir une expérience professionnelle dans ce domaine.
-            </p>
-        </section>
-    </main>
-
+  <script src="script.js"></script>
 </body>
 </html>
