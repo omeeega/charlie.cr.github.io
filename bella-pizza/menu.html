@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/darkmode.css">
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="img/logo.jpg" alt="Bella Pizza">
+    <span>Bella Pizza</span>
+  </a>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="reservation.html">Réservation</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="commande.html" class="btn-nav">🛒 Commander <span class="cart-count" id="cart-count">0</span></a></li>
+  </ul>
+</nav>
+
+<main style="padding-top:calc(var(--nav-h) + 50px); padding-bottom:60px;">
+  <div style="max-width:1200px; margin:0 auto; padding:0 5%;">
+
+    <div class="section-title">
+      <h2>Notre Carte Complète</h2>
+      <div class="line"></div>
+    </div>
+
+    <!-- Recherche -->
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="search" id="search" placeholder="Rechercher une pizza ou un ingrédient…" aria-label="Rechercher">
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-cat="all">Toutes</button>
+      <button class="filter-btn" data-cat="classique">Classiques</button>
+      <button class="filter-btn" data-cat="vegetarienne">Végétariennes</button>
+      <button class="filter-btn" data-cat="speciale">Spéciales</button>
+    </div>
+
+    <!-- Grille -->
+    <div class="pizza-grid" id="pizza-grid"></div>
+
+  </div>
+</main>
+
+<!-- MODAL PERSONNALISATION -->
+<div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-label="Personnaliser votre pizza">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-name">Pizza</h3>
+      <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+    </div>
+    <img id="modal-img" src="" alt="" style="width:100%;height:180px;object-fit:cover;border-radius:8px;margin-bottom:16px;">
+    <div class="modal-options">
+      <h4>Taille</h4>
+      <div class="option-group" id="opt-size">
+        <button class="option-btn selected" data-val="0" data-label="25 cm">25 cm</button>
+        <button class="option-btn" data-val="2" data-label="30 cm">30 cm +2€</button>
+        <button class="option-btn" data-val="4" data-label="35 cm">35 cm +4€</button>
+        <button class="option-btn" data-val="6" data-label="40 cm">40 cm +6€</button>
+      </div>
+      <h4>Pâte</h4>
+      <div class="option-group" id="opt-pate">
+        <button class="option-btn selected" data-val="0" data-label="Fine">Fine</button>
+        <button class="option-btn" data-val="0" data-label="Épaisse">Épaisse</button>
+        <button class="option-btn" data-val="1.5" data-label="Sans gluten">Sans gluten +1,50€</button>
+      </div>
+      <h4>Suppléments</h4>
+      <div class="option-group" id="opt-extras">
+        <button class="option-btn" data-val="1" data-label="Mozzarella">Mozzarella +1€</button>
+        <button class="option-btn" data-val="1.5" data-label="Jambon">Jambon +1,50€</button>
+        <button class="option-btn" data-val="1.5" data-label="Champignons">Champignons +1,50€</button>
+        <button class="option-btn" data-val="2" data-label="Pepperoni">Pepperoni +2€</button>
+      </div>
+    </div>
+    <div class="modal-summary">
+      <div id="modal-summary-text"></div>
+      <div class="summary-total">Total : <span id="modal-total">0,00 €</span></div>
+    </div>
+    <button class="btn btn-primary" id="modal-add" style="width:100%">Ajouter au panier</button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-bottom">&copy; <span id="year"></span> Bella Pizza — Tous droits réservés</div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const PIZZAS = [
+  {id:'margherita', name:'Margherita', cat:'classique', price:10.90, img:'img/pizza-margherita.jpg', desc:'Tomate, mozzarella fraîche, basilic', badge:'best'},
+  {id:'pepperoni', name:'Pepperoni', cat:'classique', price:15.99, img:'img/pizza-pepperoni.jpg', desc:'Tomate, mozzarella, généreux pepperoni', badge:'best'},
+  {id:'4fromages', name:'4 Fromages', cat:'classique', price:12.50, img:'img/pizza-4fromages.jpg', desc:'Mozzarella, gorgonzola, emmental, chèvre'},
+  {id:'reine', name:'Reine', cat:'classique', price:9.80, img:'img/pizza-reine.jpg', desc:'Tomate, mozzarella, jambon, champignons'},
+  {id:'normande', name:'Normande', cat:'classique', price:12.00, img:'img/pizza-normande.jpg', desc:'Crème, camembert, lardons, pommes'},
+  {id:'savoyarde', name:'Savoyarde', cat:'speciale', price:14.00, img:'img/pizza-savoyarde.jpg', desc:'Crème, reblochon, lardons, pommes de terre'},
+  {id:'vegetarienne', name:'Végétarienne', cat:'vegetarienne', price:11.00, img:'img/pizza-vegetarienne.jpg', desc:'Tomate, légumes de saison, herbes fraîches', badge:'veg'},
+  {id:'chevre-miel', name:'Chèvre-Miel', cat:'speciale', price:12.00, img:'img/pizza-chevre-miel.jpg', desc:'Crème, chèvre frais, miel de fleurs, noix', badge:'new'},
+  {id:'merguez', name:'Merguez', cat:'speciale', price:14.00, img:'img/pizza-merguez.jpg', desc:'Tomate, mozzarella, merguez, poivrons'},
+  {id:'nicoise', name:'Niçoise', cat:'speciale', price:9.99, img:'img/pizza-nicoise.jpg', desc:'Tomate, thon, anchois, olives, œuf'},
+  {id:'champignons', name:'Champignons', cat:'vegetarienne', price:8.99, img:'img/pizza-champignons.jpg', desc:'Crème, mozzarella, champignons variés', badge:'veg'},
+  {id:'californienne', name:'Californienne', cat:'speciale', price:11.00, img:'img/pizza-californienne.jpg', desc:'Crème, mozzarella, poulet, avocat, tomates cerises'},
+  {id:'calzone', name:'Calzone', cat:'speciale', price:14.75, img:'img/pizza-calzone.jpg', desc:'Pâte pliée, jambon, mozzarella, champignons'},
+  {id:'grecque', name:'Grecque', cat:'speciale', price:13.00, img:'img/pizza-grecque.jpg', desc:'Tomate, feta, olives, poivrons, oignons', badge:'new'},
+  {id:'detroit', name:'Detroit', cat:'speciale', price:13.50, img:'img/pizza-detroit.jpg', desc:'Pepperoni, mozzarella, sauce tomate épaisse, pâte épaisse'},
+];
+
+let currentPizza = null;
+let selectedExtras = [];
+
+function badgeHTML(b) {
+  if (b === 'best') return '<span class="badge badge-best">Best-seller</span>';
+  if (b === 'veg') return '<span class="badge badge-veg">Végé</span>';
+  if (b === 'new') return '<span class="badge badge-new">Nouveau</span>';
+  return '';
+}
+
+function renderPizzas(list) {
+  const grid = document.getElementById('pizza-grid');
+  if (!list.length) { grid.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.6);grid-column:1/-1;padding:40px">Aucune pizza trouvée.</p>'; return; }
+  grid.innerHTML = list.map(p => `
+    <article class="pizza-card reveal">
+      <div class="card-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
+        ${badgeHTML(p.badge)}
+      </div>
+      <div class="card-body">
+        <h3>${p.name}</h3>
+        <p class="ingredients">${p.desc}</p>
+        <div class="card-footer">
+          <span class="price">${p.price.toFixed(2).replace('.',',')} €</span>
+          <button class="btn-add" onclick="openModal('${p.id}')">✏️ Personnaliser</button>
+        </div>
+      </div>
+    </article>
+  `).join('');
+  initReveal();
+}
+
+function filterAndRender() {
+  const cat = document.querySelector('.filter-btn.active')?.dataset.cat || 'all';
+  const q = document.getElementById('search').value.toLowerCase();
+  let list = PIZZAS.filter(p => (cat === 'all' || p.cat === cat) && (!q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)));
+  renderPizzas(list);
+}
+
+document.getElementById('filters').addEventListener('click', e => {
+  if (!e.target.matches('.filter-btn')) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  filterAndRender();
+});
+document.getElementById('search').addEventListener('input', filterAndRender);
+
+// Modal
+function calcModalTotal() {
+  if (!currentPizza) return;
+  const sizeVal = parseFloat(document.querySelector('#opt-size .selected')?.dataset.val || 0);
+  const pateVal = parseFloat(document.querySelector('#opt-pate .selected')?.dataset.val || 0);
+  const extrasVal = selectedExtras.reduce((s,v) => s + parseFloat(v), 0);
+  const total = currentPizza.price + sizeVal + pateVal + extrasVal;
+  document.getElementById('modal-total').textContent = total.toFixed(2).replace('.',',') + ' €';
+}
+
+function makeOptionGroup(groupId, multi = false) {
+  document.getElementById(groupId).addEventListener('click', e => {
+    if (!e.target.matches('.option-btn')) return;
+    if (multi) {
+      e.target.classList.toggle('selected');
+      selectedExtras = [...document.querySelectorAll(`#${groupId} .selected`)].map(b => b.dataset.val);
+    } else {
+      document.querySelectorAll(`#${groupId} .option-btn`).forEach(b => b.classList.remove('selected'));
+      e.target.classList.add('selected');
+    }
+    calcModalTotal();
+  });
+}
+makeOptionGroup('opt-size');
+makeOptionGroup('opt-pate');
+makeOptionGroup('opt-extras', true);
+
+function openModal(id) {
+  currentPizza = PIZZAS.find(p => p.id === id);
+  if (!currentPizza) return;
+  selectedExtras = [];
+  document.getElementById('modal-name').textContent = currentPizza.name;
+  document.getElementById('modal-img').src = currentPizza.img;
+  document.getElementById('modal-img').alt = currentPizza.name;
+  document.querySelectorAll('#opt-extras .option-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('#opt-size .option-btn').forEach((b,i) => b.classList.toggle('selected', i===0));
+  document.querySelectorAll('#opt-pate .option-btn').forEach((b,i) => b.classList.toggle('selected', i===0));
+  calcModalTotal();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+document.getElementById('modal-close').addEventListener('click', () => document.getElementById('modal-overlay').classList.remove('open'));
+document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+
+document.getElementById('modal-add').addEventListener('click', () => {
+  if (!currentPizza) return;
+  const sizeLabel = document.querySelector('#opt-size .selected')?.dataset.label || '25 cm';
+  const pateLabel = document.querySelector('#opt-pate .selected')?.dataset.label || 'Fine';
+  const sizeVal = parseFloat(document.querySelector('#opt-size .selected')?.dataset.val || 0);
+  const pateVal = parseFloat(document.querySelector('#opt-pate .selected')?.dataset.val || 0);
+  const extrasVal = selectedExtras.reduce((s,v) => s + parseFloat(v), 0);
+  const total = currentPizza.price + sizeVal + pateVal + extrasVal;
+  const opts = `${sizeLabel}, pâte ${pateLabel}`;
+  cart.add({ id: currentPizza.id + '_' + Date.now(), name: currentPizza.name, price: total, img: currentPizza.img, opts });
+  document.getElementById('modal-overlay').classList.remove('open');
+});
+
+function initReveal() {
+  const obs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }}); }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+filterAndRender();
+</script>
+</body>
+</html>

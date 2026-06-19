@@ -1,0 +1,87 @@
+body {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: 'Vivaldi', serif;
+}
+
+.content {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+}
+
+.list-group-item {
+    background: rgba(255, 255, 255, 0.8);
+    color: black;
+}
+
+/* Media queries pour les écrans plus petits */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .content {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .list-group-item {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .content {
+        padding: 10px;
+        border-radius: 5px;
+    }
+    
+    body {
+        padding: 10px;
+    }
+}
+
+/* Images de fond pour chaque pizza */
+#californienne { background-image: url('../img/pizza-californienne.jpg'); }
+
+#vegetarienne { background-image: url('../img/pizza-vegetarienne.jpg'); }
+
+#savoyarde { background-image: url('../img/pizza-savoyarde.jpg'); }
+
+#reine { background-image: url('../img/pizza-reine.jpg'); }
+
+#pepperoni { background-image: url('../img/pizza-pepperoni.jpg'); }
+
+#normande { background-image: url('../img/pizza-normande.jpg'); }
+
+#nicoise { background-image: url('../img/pizza-nicoise.jpg'); }
+
+#merguez { background-image: url('../img/pizza-merguez.jpg'); }
+
+#margherita { background-image: url('../img/pizza-margherita.jpg'); }
+
+#grecque { background-image: url('../img/pizza-grecque.jpg'); }
+
+#detroit { background-image: url('../img/pizza-detroit.jpg'); }
+
+#champignons { background-image: url('../img/pizza-champignons.jpg'); }
+
+#calzone { background-image: url('../img/pizza-calzone.jpg'); }
+
+#fromages { background-image: url('../img/pizza-4fromages.jpg'); }
+
+#chevre-miel { background-image: url('../img/pizza-chevre-miel.jpg'); }

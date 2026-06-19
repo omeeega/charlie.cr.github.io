@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    :root { --primary:#ff7e5f; --secondary:#feb47b; --gold:#f8b400; --card-bg:rgba(30,30,30,0.95); --radius:14px; --nav-h:0px; }
+    * { box-sizing:border-box; }
+    body { background:#111; color:#fff; font-family:'Roboto',sans-serif; margin:0; }
+
+    /* Layout */
+    .admin-layout { display:flex; min-height:100vh; }
+    .sidebar { width:240px; background:#161616; border-right:1px solid rgba(255,255,255,0.07); display:flex; flex-direction:column; position:fixed; top:0; bottom:0; overflow-y:auto; z-index:10; }
+    .sidebar-logo { padding:24px 20px; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; gap:12px; }
+    .sidebar-logo img { width:40px; height:40px; border-radius:50%; }
+    .sidebar-logo span { font-weight:700; font-size:1rem; }
+    .sidebar-section { padding:8px 12px; font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; color:rgba(255,255,255,0.3); margin-top:12px; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:13px 20px; cursor:pointer; transition:all 0.2s; font-size:0.9rem; color:rgba(255,255,255,0.55); border-left:3px solid transparent; }
+    .nav-item:hover { background:rgba(255,255,255,0.05); color:#fff; }
+    .nav-item.active { background:rgba(255,126,95,0.12); color:#fff; border-left-color:var(--primary); }
+    .nav-item .ni-icon { font-size:1.1rem; width:22px; text-align:center; }
+    .sidebar-footer { margin-top:auto; padding:16px 20px; border-top:1px solid rgba(255,255,255,0.07); }
+
+    .admin-main { margin-left:240px; flex:1; padding:32px; }
+    @media(max-width:768px){ .sidebar{ width:64px; } .sidebar-logo span,.nav-item span,.sidebar-section,.sidebar-footer { display:none; } .admin-main { margin-left:64px; } }
+
+    /* Top bar */
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; }
+    .topbar h1 { font-size:1.6rem; font-weight:800; }
+    .topbar-actions { display:flex; gap:12px; align-items:center; }
+    .admin-badge { background:rgba(255,126,95,0.2); border:1px solid rgba(255,126,95,0.4); padding:6px 14px; border-radius:20px; font-size:0.8rem; color:var(--primary); }
+
+    /* Stat cards */
+    .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:18px; margin-bottom:28px; }
+    .stat-card { background:var(--card-bg); border-radius:var(--radius); padding:22px; border:1px solid rgba(255,255,255,0.07); position:relative; overflow:hidden; }
+    .stat-card::before { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; background:rgba(255,126,95,0.08); }
+    .stat-icon { font-size:1.8rem; margin-bottom:8px; }
+    .stat-label { font-size:0.78rem; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; }
+    .stat-value { font-size:2rem; font-weight:800; color:#fff; margin:4px 0; }
+    .stat-change { font-size:0.8rem; color:#4caf50; }
+
+    /* Charts row */
+    .charts-row { display:grid; grid-template-columns:2fr 1fr; gap:18px; margin-bottom:28px; }
+    @media(max-width:900px){ .charts-row{ grid-template-columns:1fr; } }
+    .chart-card { background:var(--card-bg); border-radius:var(--radius); padding:22px; border:1px solid rgba(255,255,255,0.07); }
+    .chart-title { font-size:0.9rem; font-weight:600; margin-bottom:16px; color:rgba(255,255,255,0.7); }
+
+    /* Tables */
+    .data-table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    .data-table th { text-align:left; padding:10px 14px; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.35); border-bottom:1px solid rgba(255,255,255,0.08); }
+    .data-table td { padding:12px 14px; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:middle; }
+    .data-table tr:hover td { background:rgba(255,255,255,0.03); }
+    .status-badge { display:inline-block; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; }
+    .status-en-attente { background:rgba(248,180,0,0.15); color:var(--gold); border:1px solid rgba(248,180,0,0.3); }
+    .status-en-preparation { background:rgba(33,150,243,0.15); color:#64b5f6; border:1px solid rgba(33,150,243,0.3); }
+    .status-livre { background:rgba(76,175,80,0.15); color:#81c784; border:1px solid rgba(76,175,80,0.3); }
+    .status-annule { background:rgba(244,67,54,0.12); color:#e57373; border:1px solid rgba(244,67,54,0.25); }
+
+    /* Section panels */
+    .panel { display:none; }
+    .panel.active { display:block; }
+
+    /* Menu management */
+    .pizza-edit-row { display:flex; align-items:center; gap:14px; padding:14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.06); }
+    .pizza-edit-emoji { font-size:1.8rem; width:40px; text-align:center; }
+    .pizza-edit-info { flex:1; }
+    .pizza-edit-name { font-size:0.95rem; font-weight:600; }
+    .pizza-edit-price { font-size:0.82rem; color:var(--gold); }
+    .pizza-edit-actions { display:flex; gap:8px; }
+    .edit-btn { padding:6px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:none; color:rgba(255,255,255,0.6); cursor:pointer; font-size:0.82rem; transition:all 0.2s; }
+    .edit-btn:hover { background:rgba(255,126,95,0.2); border-color:var(--primary); color:#fff; }
+
+    /* Calendar mini */
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+    .cal-day { padding:8px 4px; text-align:center; font-size:0.78rem; border-radius:8px; }
+    .cal-day.header { color:rgba(255,255,255,0.35); font-size:0.7rem; }
+    .cal-day.has-resa { background:rgba(255,126,95,0.2); color:var(--primary); cursor:pointer; }
+    .cal-day.today { background:rgba(255,126,95,0.08); border:1px solid rgba(255,126,95,0.3); }
+
+    /* Toggle */
+    .toggle-switch { position:relative; width:44px; height:24px; display:inline-block; }
+    .toggle-switch input { opacity:0; width:0; }
+    .tog-slider { position:absolute; inset:0; background:rgba(255,255,255,0.15); border-radius:12px; cursor:pointer; transition:0.3s; }
+    .tog-slider:before { content:''; position:absolute; width:18px; height:18px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:0.3s; }
+    .toggle-switch input:checked + .tog-slider { background:var(--primary); }
+    .toggle-switch input:checked + .tog-slider:before { transform:translateX(20px); }
+
+    /* Empty state */
+    .empty-state { text-align:center; padding:48px; color:rgba(255,255,255,0.25); font-size:0.95rem; }
+    .empty-state .empty-icon { font-size:3rem; margin-bottom:12px; }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="img/logo.jpg" alt="Bella Pizza">
+      <span>Admin</span>
+    </div>
+    <div class="sidebar-section">Vue d'ensemble</div>
+    <div class="nav-item active" data-panel="dashboard"><span class="ni-icon">📊</span><span>Dashboard</span></div>
+    <div class="sidebar-section">Gestion</div>
+    <div class="nav-item" data-panel="orders"><span class="ni-icon">📦</span><span>Commandes</span></div>
+    <div class="nav-item" data-panel="reservations"><span class="ni-icon">📅</span><span>Réservations</span></div>
+    <div class="nav-item" data-panel="menu"><span class="ni-icon">🍕</span><span>Menu</span></div>
+    <div class="nav-item" data-panel="reviews"><span class="ni-icon">⭐</span><span>Avis</span></div>
+    <div class="sidebar-section">Outils</div>
+    <div class="nav-item" data-panel="analytics"><span class="ni-icon">📈</span><span>Analytique</span></div>
+    <div class="sidebar-footer">
+      <a href="index.html" style="color:rgba(255,255,255,0.4);font-size:0.82rem;text-decoration:none">← Retour au site</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+    <div class="topbar">
+      <h1 id="panel-title">Dashboard</h1>
+      <div class="topbar-actions">
+        <span id="admin-date" style="font-size:0.85rem;color:rgba(255,255,255,0.4)"></span>
+        <span class="admin-badge">🔒 Administrateur</span>
+      </div>
+    </div>
+
+    <!-- === DASHBOARD === -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stat-grid" id="stat-grid"></div>
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">📦 Commandes par pizza (top)</div>
+          <canvas id="bar-chart" width="500" height="220"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🍕 Répartition des pizzas</div>
+          <canvas id="pie-chart" width="220" height="220"></canvas>
+          <div id="pie-legend" style="margin-top:12px;font-size:0.75rem"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">💰 Dernières commandes</div>
+        <div id="recent-orders-table"></div>
+      </div>
+    </div>
+
+    <!-- === ORDERS === -->
+    <div class="panel" id="panel-orders">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div style="display:flex;gap:10px">
+          <select id="order-filter" style="background:#222;border:1px solid rgba(255,255,255,0.15);color:#fff;padding:8px 14px;border-radius:8px;font-size:0.88rem">
+            <option value="">Tous les statuts</option>
+            <option value="en-attente">En attente</option>
+            <option value="en-preparation">En préparation</option>
+            <option value="livre">Livré</option>
+            <option value="annule">Annulé</option>
+          </select>
+        </div>
+        <button class="edit-btn" onclick="Admin.exportCSV()">⬇ Exporter CSV</button>
+      </div>
+      <div id="orders-table-wrap"></div>
+    </div>
+
+    <!-- === RESERVATIONS === -->
+    <div class="panel" id="panel-reservations">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="chart-card">
+          <div class="chart-title">📅 Calendrier — <span id="cal-month-label"></span></div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">📋 Liste des réservations</div>
+          <div id="resas-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === MENU === -->
+    <div class="panel" id="panel-menu">
+      <div class="chart-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div class="chart-title" style="margin:0">🍕 Gestion du menu</div>
+          <button class="edit-btn" onclick="resetMenu()">↺ Réinitialiser</button>
+        </div>
+        <div id="menu-list"></div>
+      </div>
+    </div>
+
+    <!-- === REVIEWS === -->
+    <div class="panel" id="panel-reviews">
+      <div class="chart-card">
+        <div class="chart-title">⭐ Modération des avis</div>
+        <div id="reviews-admin-list"></div>
+      </div>
+    </div>
+
+    <!-- === ANALYTICS === -->
+    <div class="panel" id="panel-analytics">
+      <div class="stat-grid" id="analytics-stats"></div>
+      <div class="chart-card" style="margin-top:0">
+        <div class="chart-title">📊 Chiffre d'affaires — simulation 7 jours</div>
+        <canvas id="ca-chart" width="700" height="200"></canvas>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/admin.js"></script>
+<script>
+// Panels
+const TITLES = { dashboard:'Dashboard', orders:'Commandes', reservations:'Réservations', menu:'Menu', reviews:'Avis', analytics:'Analytique' };
+document.querySelectorAll('.nav-item[data-panel]').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    item.classList.add('active');
+    const id = item.dataset.panel;
+    document.getElementById('panel-'+id).classList.add('active');
+    document.getElementById('panel-title').textContent = TITLES[id] || id;
+    if (id === 'orders') renderOrders();
+    if (id === 'reservations') renderResas();
+    if (id === 'menu') renderMenu();
+    if (id === 'reviews') renderReviews();
+    if (id === 'analytics') renderAnalytics();
+  });
+});
+
+document.getElementById('admin-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+
+// ---- DASHBOARD ----
+function renderDashboard() {
+  const s = Admin.stats();
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">Commandes</div><div class="stat-value">${s.orders}</div><div class="stat-change">↑ Total cumulé</div></div>
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Chiffre d'affaires</div><div class="stat-value">${s.ca.toFixed(0)} €</div><div class="stat-change">Toutes commandes</div></div>
+    <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-label">Panier moyen</div><div class="stat-value">${s.avg.toFixed(2)} €</div><div class="stat-change">Par commande</div></div>
+    <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-label">Pizza populaire</div><div class="stat-value" style="font-size:1.2rem">${s.topPizza}</div><div class="stat-change">La plus commandée</div></div>
+  `;
+
+  // Bar chart — top pizzas
+  const orders = Admin.getOrders();
+  const counts = {};
+  orders.forEach(o => o.items?.forEach(it => { counts[it.name] = (counts[it.name]||0) + it.qty; }));
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const bc = document.getElementById('bar-chart');
+  if (top.length > 0) Admin.drawBarChart(bc, top.map(x=>x[1]), top.map(x=>x[0]));
+  else { const c=bc.getContext('2d'); c.fillStyle='rgba(255,255,255,0.1)'; c.font='14px Roboto'; c.textAlign='center'; c.fillText('Aucune commande', bc.width/2, bc.height/2); }
+
+  // Pie chart
+  const COLORS = ['#ff7e5f','#feb47b','#f8b400','#4caf50','#2196f3','#9c27b0'];
+  const pc = document.getElementById('pie-chart');
+  if (top.length > 0) {
+    Admin.drawPie(pc, top.map(x=>x[1]), top.map(x=>x[0]), COLORS);
+    document.getElementById('pie-legend').innerHTML = top.map((x,i)=>`<span style="color:${COLORS[i]};margin-right:12px">■ ${x[0]}</span>`).join('');
+  }
+
+  // Recent orders table
+  const recent = orders.slice(-5).reverse();
+  document.getElementById('recent-orders-table').innerHTML = recent.length === 0
+    ? '<div class="empty-state"><div class="empty-icon">📦</div>Aucune commande encore</div>'
+    : `<table class="data-table"><thead><tr><th>Numéro</th><th>Date</th><th>Mode</th><th>Total</th><th>Statut</th></tr></thead><tbody>
+    ${recent.map(o=>{
+      const total = o.items.reduce((s,i)=>s+i.price*i.qty,0);
+      const status = o.status || 'en-attente';
+      return `<tr><td><strong>${o.num}</strong></td><td>${new Date(o.date).toLocaleDateString('fr-FR')}</td><td>${o.mode||'—'}</td><td style="color:var(--gold)">${total.toFixed(2)} €</td><td><span class="status-badge status-${status}">${status.replace('-',' ')}</span></td></tr>`;
+    }).join('')}
+    </tbody></table>`;
+}
+
+// ---- ORDERS ----
+function renderOrders() {
+  let orders = Admin.getOrders();
+  const f = document.getElementById('order-filter').value;
+  if (f) orders = orders.filter(o => (o.status||'en-attente') === f);
+  orders = [...orders].reverse();
+  document.getElementById('orders-table-wrap').innerHTML = orders.length === 0
+    ? '<div class="empty-state"><div class="empty-icon">📦</div>Aucune commande</div>'
+    : `<table class="data-table"><thead><tr><th>Numéro</th><th>Date</th><th>Articles</th><th>Total</th><th>Mode</th><th>Statut</th><th>Actions</th></tr></thead><tbody>
+    ${orders.map((o,ri)=>{
+      const i = Admin.getOrders().length - 1 - ri;
+      const total = o.items.reduce((s,it)=>s+it.price*it.qty,0);
+      const status = o.status || 'en-attente';
+      const arts = o.items.map(it=>`${it.name}×${it.qty}`).join(', ');
+      return `<tr>
+        <td><strong>${o.num}</strong></td>
+        <td>${new Date(o.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${arts}">${arts}</td>
+        <td style="color:var(--gold)">${total.toFixed(2)} €</td>
+        <td>${o.mode||'—'}</td>
+        <td><span class="status-badge status-${status}">${status.replace('-',' ')}</span></td>
+        <td>
+          <select onchange="changeStatus(${i},this.value)" style="background:#222;border:1px solid rgba(255,255,255,0.1);color:#fff;padding:4px 8px;border-radius:6px;font-size:0.78rem">
+            <option ${status==='en-attente'?'selected':''} value="en-attente">En attente</option>
+            <option ${status==='en-preparation'?'selected':''} value="en-preparation">Préparation</option>
+            <option ${status==='livre'?'selected':''} value="livre">Livré</option>
+            <option ${status==='annule'?'selected':''} value="annule">Annulé</option>
+          </select>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody></table>`;
+}
+
+document.getElementById('order-filter').addEventListener('change', renderOrders);
+
+window.changeStatus = function(idx, status) {
+  Admin.updateOrderStatus(idx, status);
+  renderOrders();
+};
+
+// ---- RESERVATIONS ----
+function renderResas() {
+  const resas = Admin.getResas();
+  const now = new Date();
+  document.getElementById('cal-month-label').textContent = now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const resaDates = new Set(resas.map(r=>r.date));
+
+  let cal = ['Lu','Ma','Me','Je','Ve','Sa','Di'].map(d=>`<div class="cal-day header">${d}</div>`).join('');
+  const startOffset = (firstDay + 6) % 7;
+  for (let i=0;i<startOffset;i++) cal += '<div class="cal-day"></div>';
+  for (let d=1;d<=daysInMonth;d++) {
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = d===now.getDate();
+    const hasResa = resaDates.has(dateStr);
+    cal += `<div class="cal-day ${isToday?'today':''} ${hasResa?'has-resa':''}" title="${hasResa?'Réservation':''}">
+      ${d}${hasResa?'<br><span style="font-size:0.6rem">🟠</span>':''}
+    </div>`;
+  }
+  document.getElementById('cal-grid').innerHTML = cal;
+
+  // List
+  document.getElementById('resas-list').innerHTML = resas.length === 0
+    ? '<div class="empty-state"><div class="empty-icon">📅</div>Aucune réservation</div>'
+    : resas.slice().reverse().map(r => `
+      <div style="padding:12px;border-bottom:1px solid rgba(255,255,255,0.06)">
+        <div style="display:flex;justify-content:space-between">
+          <strong>${r.num || '—'}</strong>
+          <span style="font-size:0.8rem;color:rgba(255,255,255,0.4)">${r.date} — ${r.time}</span>
+        </div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.55);margin-top:3px">${r.name} · ${r.persons} pers. · ${r.phone||'—'}</div>
+      </div>
+    `).join('');
+}
+
+// ---- MENU ----
+const DEFAULT_PIZZAS = [
+  { id:1, emoji:'🍕', name:'Margherita',   price:10.5, cat:'classique',    available:true },
+  { id:2, emoji:'🌶', name:'Pepperoni',    price:12.5, cat:'classique',    available:true },
+  { id:3, emoji:'🧀', name:'4 Fromages',   price:13,   cat:'classique',    available:true },
+  { id:4, emoji:'🥗', name:'Végétarienne', price:12,   cat:'vegetarienne', available:true },
+  { id:5, emoji:'🍯', name:'Chèvre-Miel',  price:13.5, cat:'speciale',     available:true },
+  { id:6, emoji:'🏔', name:'Savoyarde',    price:14,   cat:'speciale',     available:true },
+  { id:7, emoji:'🫓', name:'Calzone',      price:13,   cat:'classique',    available:true },
+  { id:8, emoji:'👑', name:'Reine',        price:12,   cat:'classique',    available:true },
+];
+
+function getMenuData() {
+  return JSON.parse(localStorage.getItem('bellaPizzaMenuOverride') || JSON.stringify(DEFAULT_PIZZAS));
+}
+
+function renderMenu() {
+  const pizzas = getMenuData();
+  document.getElementById('menu-list').innerHTML = pizzas.map((p,i) => `
+    <div class="pizza-edit-row">
+      <div class="pizza-edit-emoji">${p.emoji}</div>
+      <div class="pizza-edit-info">
+        <div class="pizza-edit-name">${p.name}</div>
+        <div class="pizza-edit-price">${p.price.toFixed(2)} €</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <label class="toggle-switch">
+          <input type="checkbox" ${p.available?'checked':''} onchange="toggleAvailability(${i},this.checked)">
+          <span class="tog-slider"></span>
+        </label>
+        <span style="font-size:0.78rem;color:rgba(255,255,255,0.4)">${p.available?'Disponible':'Indispo'}</span>
+      </div>
+      <div class="pizza-edit-actions">
+        <button class="edit-btn" onclick="editPricePrompt(${i})">✏ Prix</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.toggleAvailability = function(i, val) {
+  const pizzas = getMenuData();
+  pizzas[i].available = val;
+  localStorage.setItem('bellaPizzaMenuOverride', JSON.stringify(pizzas));
+};
+
+window.editPricePrompt = function(i) {
+  const pizzas = getMenuData();
+  const newPrice = prompt(`Nouveau prix pour "${pizzas[i].name}" (€) :`, pizzas[i].price);
+  if (newPrice !== null && !isNaN(parseFloat(newPrice))) {
+    pizzas[i].price = parseFloat(newPrice);
+    localStorage.setItem('bellaPizzaMenuOverride', JSON.stringify(pizzas));
+    renderMenu();
+  }
+};
+
+window.resetMenu = function() {
+  if (confirm('Réinitialiser le menu aux valeurs par défaut ?')) {
+    localStorage.removeItem('bellaPizzaMenuOverride');
+    renderMenu();
+  }
+};
+
+// ---- REVIEWS ----
+function renderReviews() {
+  const reviews = Admin.getReviews();
+  const list = document.getElementById('reviews-admin-list');
+  if (reviews.length === 0) { list.innerHTML='<div class="empty-state"><div class="empty-icon">⭐</div>Aucun avis en attente</div>'; return; }
+  list.innerHTML = `<table class="data-table"><thead><tr><th>Auteur</th><th>Note</th><th>Commentaire</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody>
+    ${reviews.map((r,i)=>`
+      <tr>
+        <td><strong>${r.author||'Anonyme'}</strong></td>
+        <td>${'⭐'.repeat(r.rating||0)}</td>
+        <td style="max-width:280px;font-size:0.82rem;color:rgba(255,255,255,0.6)">${r.text||'—'}</td>
+        <td style="font-size:0.8rem;color:rgba(255,255,255,0.4)">${r.date||'—'}</td>
+        <td><span class="status-badge ${r.verified?'status-livre':'status-en-attente'}">${r.verified?'Publié':'En attente'}</span></td>
+        <td style="display:flex;gap:6px">
+          <button class="edit-btn" onclick="approveReview(${i})">✓</button>
+          <button class="edit-btn" style="color:rgba(255,100,100,0.7)" onclick="deleteReview(${i})">✕</button>
+        </td>
+      </tr>
+    `).join('')}
+  </tbody></table>`;
+}
+
+window.approveReview = function(i) {
+  const reviews = Admin.getReviews();
+  reviews[i].verified = true;
+  localStorage.setItem('bellaPizzaReviews', JSON.stringify(reviews));
+  renderReviews();
+};
+
+window.deleteReview = function(i) {
+  const reviews = Admin.getReviews();
+  reviews.splice(i, 1);
+  localStorage.setItem('bellaPizzaReviews', JSON.stringify(reviews));
+  renderReviews();
+};
+
+// ---- ANALYTICS ----
+function renderAnalytics() {
+  const orders = Admin.getOrders();
+  const totalCA = orders.reduce((s,o)=>s+o.items.reduce((ss,i)=>ss+i.price*i.qty,0),0);
+  const avgScore = (4.7).toFixed(1);
+
+  document.getElementById('analytics-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">CA Total</div><div class="stat-value">${totalCA.toFixed(0)} €</div></div>
+    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">Commandes</div><div class="stat-value">${orders.length}</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-label">Note moy.</div><div class="stat-value">${avgScore}/5</div></div>
+    <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-label">Taux satisf.</div><div class="stat-value">96%</div></div>
+  `;
+
+  // Simulated 7-day CA bar chart
+  const days = [];
+  const vals = [];
+  for (let i=6; i>=0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    days.push(d.toLocaleDateString('fr-FR',{weekday:'short'}));
+    vals.push(Math.floor(200 + Math.random()*400 + (orders.length*15)));
+  }
+  Admin.drawBarChart(document.getElementById('ca-chart'), vals, days);
+}
+
+// Init
+renderDashboard();
+</script>
+</body>
+</html>

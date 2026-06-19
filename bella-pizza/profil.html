@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon profil – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/shaders.css">
+  <style>
+    .profil-grid { display:grid; grid-template-columns:300px 1fr; gap:28px; max-width:1000px; margin:0 auto; }
+    @media(max-width:800px){ .profil-grid{ grid-template-columns:1fr; } }
+
+    .profil-card { background:var(--card-bg); border-radius:var(--radius); padding:28px; border:1px solid rgba(255,255,255,0.08); }
+    .avatar-wrap { text-align:center; margin-bottom:20px; }
+    .avatar { width:90px; height:90px; border-radius:50%; background:rgba(255,126,95,0.2); border:3px solid var(--primary); display:flex; align-items:center; justify-content:center; font-size:2.5rem; margin:0 auto 12px; cursor:pointer; transition:transform 0.3s; }
+    .avatar:hover { transform:scale(1.08) rotate(5deg); }
+    .profil-name { font-size:1.2rem; font-weight:700; }
+    .profil-email { font-size:0.85rem; color:rgba(255,255,255,0.4); }
+
+    .level-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:0.85rem; margin-top:10px; }
+    .level-debutant { background:rgba(255,255,255,0.08); }
+    .level-bronze    { background:rgba(205,127,50,0.2); color:#cd7f32; border:1px solid rgba(205,127,50,0.3); }
+    .level-argent    { background:rgba(192,192,192,0.15); color:#c0c0c0; border:1px solid rgba(192,192,192,0.3); }
+    .level-or        { background:rgba(248,180,0,0.15); color:var(--gold); border:1px solid rgba(248,180,0,0.3); }
+
+    /* Stat mini-cards */
+    .mini-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+    .mini-stat { background:rgba(255,255,255,0.04); border-radius:10px; padding:14px; text-align:center; }
+    .mini-stat .val { font-size:1.4rem; font-weight:700; color:var(--gold); }
+    .mini-stat .lbl { font-size:0.72rem; color:rgba(255,255,255,0.4); }
+
+    /* Settings tabs */
+    .tabs { display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:24px; }
+    .tab { padding:12px 20px; cursor:pointer; font-size:0.9rem; color:rgba(255,255,255,0.45); border-bottom:2px solid transparent; transition:all 0.2s; }
+    .tab.active { color:#fff; border-bottom-color:var(--primary); }
+
+    /* Theme cards */
+    .theme-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:24px; }
+    .theme-card { border-radius:12px; padding:16px; cursor:pointer; border:2px solid rgba(255,255,255,0.1); transition:all 0.25s; position:relative; overflow:hidden; }
+    .theme-card.selected { border-color:var(--primary); box-shadow:0 0 16px rgba(255,126,95,0.3); }
+    .theme-card .tc-name { font-weight:600; margin-bottom:4px; }
+    .theme-card .tc-swatch { display:flex; gap:5px; margin-top:8px; }
+    .theme-card .swatch { width:18px; height:18px; border-radius:50%; }
+    .theme-card .tc-check { position:absolute; top:10px; right:12px; font-size:1rem; opacity:0; transition:opacity 0.2s; }
+    .theme-card.selected .tc-check { opacity:1; }
+
+    /* Slider section */
+    .setting-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .setting-label { font-size:0.9rem; }
+    .setting-desc { font-size:0.78rem; color:rgba(255,255,255,0.4); margin-top:2px; }
+    .toggle-switch { position:relative; width:48px; height:26px; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:rgba(255,255,255,0.15); border-radius:13px; cursor:pointer; transition:background 0.3s; }
+    .toggle-slider:before { content:''; position:absolute; width:20px; height:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:transform 0.3s; }
+    .toggle-switch input:checked + .toggle-slider { background:var(--primary); }
+    .toggle-switch input:checked + .toggle-slider:before { transform:translateX(22px); }
+
+    /* Font size & animations */
+    .btn-group { display:flex; gap:8px; }
+    .group-btn { padding:6px 16px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); cursor:pointer; font-size:0.85rem; transition:all 0.2s; }
+    .group-btn.active { background:rgba(255,126,95,0.2); border-color:var(--primary); color:#fff; }
+
+    /* Tab panels */
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* Edit profile fields */
+    .field-row { margin-bottom:14px; }
+    .field-row label { font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:5px; display:block; }
+  </style>
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><img src="img/logo.jpg" alt="Bella Pizza"><span>Bella Pizza</span></a>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li><li><a href="menu.html">Menu</a></li>
+    <li><a href="commande.html" class="btn-nav">🛒 Commander <span class="cart-count" id="cart-count">0</span></a></li>
+  </ul>
+</nav>
+
+<main style="padding-top:calc(var(--nav-h)+60px);padding-bottom:80px;padding-left:5%;padding-right:5%;">
+  <div class="section-title"><h2>Mon profil</h2><div class="line"></div></div>
+
+  <div class="profil-grid">
+    <!-- Carte profil -->
+    <div>
+      <div class="profil-card">
+        <div class="avatar-wrap">
+          <div class="avatar" id="avatar-icon">🍕</div>
+          <div class="profil-name" id="display-name">Pizzaiolo anonyme</div>
+          <div class="profil-email" id="display-email">–</div>
+          <div class="level-badge level-or" id="level-badge">🥇 Niveau Or</div>
+        </div>
+        <div class="mini-stats">
+          <div class="mini-stat"><div class="val" id="stat-orders">0</div><div class="lbl">Commandes</div></div>
+          <div class="mini-stat"><div class="val" id="stat-pts">0</div><div class="lbl">Points fidélité</div></div>
+          <div class="mini-stat"><div class="val" id="stat-spent">0 €</div><div class="lbl">Dépensé</div></div>
+          <div class="mini-stat"><div class="val" id="stat-resas">0</div><div class="lbl">Réservations</div></div>
+        </div>
+        <div style="margin-top:20px">
+          <a href="mes-points.html" class="btn btn-outline" style="width:100%;display:block;text-align:center">Voir mes points</a>
+          <a href="history.html" class="btn btn-outline" style="width:100%;display:block;text-align:center;margin-top:10px">Historique</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panneau paramètres -->
+    <div class="profil-card">
+      <div class="tabs">
+        <div class="tab active" data-tab="identite">👤 Identité</div>
+        <div class="tab" data-tab="apparence">🎨 Apparence</div>
+        <div class="tab" data-tab="accessibilite">♿ Accessibilité</div>
+        <div class="tab" data-tab="donnees">🗄 Données</div>
+      </div>
+
+      <!-- Tab 1 : Identité -->
+      <div class="tab-panel active" id="tab-identite">
+        <div class="field-row">
+          <label>Prénom</label>
+          <input type="text" id="inp-name" class="form-control" placeholder="Votre prénom">
+        </div>
+        <div class="field-row">
+          <label>E-mail</label>
+          <input type="email" id="inp-email" class="form-control" placeholder="votre@email.fr">
+        </div>
+        <div class="field-row">
+          <label>Téléphone</label>
+          <input type="tel" id="inp-tel" class="form-control" placeholder="06 00 00 00 00">
+        </div>
+        <div class="field-row">
+          <label>Adresse de livraison habituelle</label>
+          <input type="text" id="inp-adresse" class="form-control" placeholder="12 rue de la Pizza, Toulouse">
+        </div>
+        <div class="field-row">
+          <label>Avatar</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <span class="avatar-option" style="font-size:1.8rem;cursor:pointer" data-emoji="🍕">🍕</span>
+            <span class="avatar-option" style="font-size:1.8rem;cursor:pointer" data-emoji="🧑‍🍳">🧑‍🍳</span>
+            <span class="avatar-option" style="font-size:1.8rem;cursor:pointer" data-emoji="🍅">🍅</span>
+            <span class="avatar-option" style="font-size:1.8rem;cursor:pointer" data-emoji="🔥">🔥</span>
+            <span class="avatar-option" style="font-size:1.8rem;cursor:pointer" data-emoji="⭐">⭐</span>
+            <span class="avatar-option" style="font-size:1.8rem;cursor:pointer" data-emoji="🦁">🦁</span>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="save-profil">Sauvegarder</button>
+      </div>
+
+      <!-- Tab 2 : Apparence -->
+      <div class="tab-panel" id="tab-apparence">
+        <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:16px">Personnalisez l'apparence du site en temps réel.</p>
+        <div class="theme-grid">
+          <div class="theme-card selected" data-theme="original">
+            <div class="tc-check">✅</div>
+            <div class="tc-name">Original</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.4)">Corail & ambre</div>
+            <div class="tc-swatch"><div class="swatch" style="background:#ff7e5f"></div><div class="swatch" style="background:#feb47b"></div><div class="swatch" style="background:#f8b400"></div></div>
+          </div>
+          <div class="theme-card" data-theme="sombre">
+            <div class="tc-check">✅</div>
+            <div class="tc-name">Ardoise</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.4)">Tons gris neutres</div>
+            <div class="tc-swatch"><div class="swatch" style="background:#b0bec5"></div><div class="swatch" style="background:#90a4ae"></div><div class="swatch" style="background:#78909c"></div></div>
+          </div>
+          <div class="theme-card" data-theme="bordeaux">
+            <div class="tc-check">✅</div>
+            <div class="tc-name">Bordeaux</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.4)">Élégance rouge</div>
+            <div class="tc-swatch"><div class="swatch" style="background:#c62828"></div><div class="swatch" style="background:#e57373"></div><div class="swatch" style="background:#ff8a65"></div></div>
+          </div>
+          <div class="theme-card" data-theme="olive">
+            <div class="tc-check">✅</div>
+            <div class="tc-name">Olive</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.4)">Nature & fraîcheur</div>
+            <div class="tc-swatch"><div class="swatch" style="background:#558b2f"></div><div class="swatch" style="background:#aed581"></div><div class="swatch" style="background:#cddc39"></div></div>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div><div class="setting-label">Mode sombre</div><div class="setting-desc">Fond noir profond</div></div>
+          <label class="toggle-switch"><input type="checkbox" id="dark-toggle-profil"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Mode néon</div><div class="setting-desc">Effets lumineux colorés</div></div>
+          <label class="toggle-switch"><input type="checkbox" id="neon-toggle"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <!-- Tab 3 : Accessibilité -->
+      <div class="tab-panel" id="tab-accessibilite">
+        <div class="setting-row">
+          <div><div class="setting-label">Taille du texte</div></div>
+          <div class="btn-group">
+            <button class="group-btn" data-fontsize="small">A</button>
+            <button class="group-btn active" data-fontsize="medium">A</button>
+            <button class="group-btn" data-fontsize="large" style="font-size:1.1rem">A</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Animations</div><div class="setting-desc">Réduire les effets visuels</div></div>
+          <div class="btn-group">
+            <button class="group-btn active" data-anim="full">Complètes</button>
+            <button class="group-btn" data-anim="reduced">Réduites</button>
+            <button class="group-btn" data-anim="none">Aucune</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Contraste élevé</div><div class="setting-desc">Améliore la lisibilité</div></div>
+          <label class="toggle-switch"><input type="checkbox" id="contrast-toggle"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Curseur personnalisé</div><div class="setting-desc">Curseur pizza sur le site</div></div>
+          <label class="toggle-switch"><input type="checkbox" id="cursor-toggle" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Langue</div><div class="setting-desc">Interface en :</div></div>
+          <select id="lang-select" class="form-control" style="width:auto;padding:6px 12px">
+            <option value="fr" selected>🇫🇷 Français</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="it">🇮🇹 Italiano</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tab 4 : Données -->
+      <div class="tab-panel" id="tab-donnees">
+        <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:20px">Gérez les données stockées localement sur votre appareil.</p>
+        <div class="setting-row">
+          <div><div class="setting-label">Exporter mes données</div><div class="setting-desc">Commandes, réservations, points</div></div>
+          <button class="btn btn-outline" id="export-data">⬇ Exporter</button>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Effacer l'historique</div><div class="setting-desc">Supprime les commandes passées</div></div>
+          <button class="btn btn-outline" id="clear-orders" style="border-color:rgba(255,80,80,0.4);color:rgba(255,100,100,0.8)">🗑 Effacer</button>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Réinitialiser tout</div><div class="setting-desc">Supprime toutes les données du site</div></div>
+          <button class="btn btn-outline" id="reset-all" style="border-color:rgba(255,80,80,0.6);color:rgba(255,80,80,0.9)">⚠ Réinitialiser</button>
+        </div>
+        <div style="margin-top:24px;padding:16px;background:rgba(255,255,255,0.03);border-radius:10px;font-size:0.8rem;color:rgba(255,255,255,0.35)">
+          Toutes les données (panier, commandes, réservations, points de fidélité) sont stockées exclusivement sur votre appareil via localStorage. Aucune donnée n'est envoyée à un serveur.
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="footer-bottom">&copy; <span id="year"></span> Bella Pizza</div></footer>
+
+<script src="js/app.js"></script>
+<script src="js/personnalisation.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Load profil
+const prof = JSON.parse(localStorage.getItem('bellaPizzaProfil') || '{}');
+if (prof.name)    { document.getElementById('inp-name').value = prof.name; document.getElementById('display-name').textContent = prof.name; }
+if (prof.email)   { document.getElementById('inp-email').value = prof.email; document.getElementById('display-email').textContent = prof.email; }
+if (prof.tel)     document.getElementById('inp-tel').value = prof.tel;
+if (prof.adresse) document.getElementById('inp-adresse').value = prof.adresse;
+if (prof.avatar)  document.getElementById('avatar-icon').textContent = prof.avatar;
+
+// Stats
+const orders = JSON.parse(localStorage.getItem('bellaPizzaOrders') || '[]');
+const resas  = JSON.parse(localStorage.getItem('bellaPizzaResas')  || '[]');
+const pts    = parseInt(localStorage.getItem('bellaPizzaPoints') || '0');
+const spent  = orders.reduce((s,o) => s + o.items.reduce((ss,i)=>ss+i.price*i.qty,0), 0);
+document.getElementById('stat-orders').textContent = orders.length;
+document.getElementById('stat-pts').textContent    = pts;
+document.getElementById('stat-spent').textContent  = spent.toFixed(0) + ' €';
+document.getElementById('stat-resas').textContent  = resas.length;
+
+function getLevelClass(p) { if(p>=50) return ['level-or','🥇 Or']; if(p>=20) return ['level-argent','🥈 Argent']; if(p>=5) return ['level-bronze','🥉 Bronze']; return ['level-debutant','🌱 Débutant']; }
+const [lc, ln] = getLevelClass(pts);
+const badge = document.getElementById('level-badge');
+badge.className = 'level-badge ' + lc; badge.textContent = ln;
+
+// Tabs
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+
+// Avatar options
+document.querySelectorAll('.avatar-option').forEach(o => {
+  o.addEventListener('click', () => { document.getElementById('avatar-icon').textContent = o.dataset.emoji; });
+});
+
+// Save profil
+document.getElementById('save-profil').addEventListener('click', () => {
+  const data = {
+    name:    document.getElementById('inp-name').value.trim(),
+    email:   document.getElementById('inp-email').value.trim(),
+    tel:     document.getElementById('inp-tel').value.trim(),
+    adresse: document.getElementById('inp-adresse').value.trim(),
+    avatar:  document.getElementById('avatar-icon').textContent,
+  };
+  localStorage.setItem('bellaPizzaProfil', JSON.stringify(data));
+  if (data.name)  document.getElementById('display-name').textContent = data.name;
+  if (data.email) document.getElementById('display-email').textContent = data.email;
+  toast('Profil sauvegardé !', 'success');
+});
+
+// Theme cards
+const savedTheme = localStorage.getItem('bellaPizzaTheme') || 'original';
+document.querySelectorAll('.theme-card').forEach(card => {
+  if (card.dataset.theme === savedTheme) card.classList.add('selected');
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    if (typeof Personnalisation !== 'undefined') Personnalisation.applyTheme(card.dataset.theme);
+    toast('Thème "' + card.querySelector('.tc-name').textContent + '" appliqué !', 'success');
+  });
+});
+
+// Dark mode toggle
+const darkToggle = document.getElementById('dark-toggle-profil');
+darkToggle.checked = document.body.classList.contains('dark-mode');
+darkToggle.addEventListener('change', () => {
+  document.body.classList.toggle('dark-mode', darkToggle.checked);
+  localStorage.setItem('bellaPizzaDark', darkToggle.checked ? '1' : '0');
+});
+
+// Neon mode
+const neonToggle = document.getElementById('neon-toggle');
+neonToggle.checked = document.body.classList.contains('neon-mode');
+neonToggle.addEventListener('change', () => {
+  document.body.classList.toggle('neon-mode', neonToggle.checked);
+  localStorage.setItem('bellaPizzaNeon', neonToggle.checked ? '1' : '0');
+  toast(neonToggle.checked ? '🌈 Mode néon activé !' : 'Mode néon désactivé', 'info');
+});
+
+// Font size & animations
+document.querySelectorAll('[data-fontsize]').forEach(btn => {
+  const saved = localStorage.getItem('bellaPizzaFontSize') || 'medium';
+  if (btn.dataset.fontsize === saved) btn.classList.add('active');
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-fontsize]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if (typeof Personnalisation !== 'undefined') Personnalisation.applyFontSize(btn.dataset.fontsize);
+    toast('Taille de texte modifiée', 'info');
+  });
+});
+
+document.querySelectorAll('[data-anim]').forEach(btn => {
+  const saved = localStorage.getItem('bellaPizzaAnimations') || 'full';
+  if (btn.dataset.anim === saved) btn.classList.add('active');
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-anim]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    toast('Animations : ' + btn.dataset.anim, 'info');
+  });
+});
+
+// Contrast toggle
+document.getElementById('contrast-toggle').addEventListener('change', function() {
+  document.documentElement.style.setProperty('--contrast', this.checked ? '1.4' : '1');
+  document.body.style.filter = this.checked ? 'contrast(1.15)' : '';
+});
+
+// Cursor toggle
+document.getElementById('cursor-toggle').addEventListener('change', function() {
+  const cursor = document.getElementById('custom-cursor');
+  if (cursor) cursor.style.display = this.checked ? 'block' : 'none';
+});
+
+// Language simulation
+document.getElementById('lang-select').addEventListener('change', function() {
+  const langs = { fr:'🇫🇷 Français', en:'🇬🇧 English', es:'🇪🇸 Español', it:'🇮🇹 Italiano' };
+  toast('Langue : ' + langs[this.value] + ' (simulation)', 'info');
+  localStorage.setItem('bellaPizzaLang', this.value);
+});
+const savedLang = localStorage.getItem('bellaPizzaLang') || 'fr';
+document.getElementById('lang-select').value = savedLang;
+
+// Export data
+document.getElementById('export-data').addEventListener('click', () => {
+  const data = {
+    profil:    JSON.parse(localStorage.getItem('bellaPizzaProfil') || '{}'),
+    orders:    JSON.parse(localStorage.getItem('bellaPizzaOrders') || '[]'),
+    resas:     JSON.parse(localStorage.getItem('bellaPizzaResas')  || '[]'),
+    points:    localStorage.getItem('bellaPizzaPoints'),
+    creations: JSON.parse(localStorage.getItem('bellaPizzaCreations') || '[]'),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mes-donnees-bella-pizza.json';
+  a.click();
+  toast('Données exportées !', 'success');
+});
+
+// Clear orders
+document.getElementById('clear-orders').addEventListener('click', () => {
+  if (!confirm('Effacer tout l\'historique des commandes ?')) return;
+  localStorage.removeItem('bellaPizzaOrders');
+  document.getElementById('stat-orders').textContent = '0';
+  toast('Historique effacé', 'info');
+});
+
+// Reset all
+document.getElementById('reset-all').addEventListener('click', () => {
+  if (!confirm('Réinitialiser TOUTES les données Bella Pizza ? Cette action est irréversible.')) return;
+  const keys = Object.keys(localStorage).filter(k => k.startsWith('bellaPizza'));
+  keys.forEach(k => localStorage.removeItem(k));
+  toast('Données réinitialisées. Rechargement…', 'info');
+  setTimeout(() => location.reload(), 1500);
+});
+</script>
+</body>
+</html>

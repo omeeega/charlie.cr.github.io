@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Points – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/darkmode.css">
+  <style>
+    .level-card { background:var(--card-bg); border-radius:var(--radius); padding:32px; text-align:center; border:2px solid rgba(255,255,255,0.1); margin-bottom:30px; }
+    .level-icon { font-size:4rem; margin-bottom:12px; animation:float 3s ease-in-out infinite; display:block; }
+    .level-name { font-size:1.6rem; font-weight:700; color:var(--gold); margin-bottom:8px; }
+    .points-big { font-size:3.5rem; font-weight:700; font-family:'Playfair Display',serif; color:#fff; }
+    .progress-wrap { background:rgba(255,255,255,0.1); border-radius:10px; height:10px; margin:20px 0; overflow:hidden; }
+    .progress-bar { height:100%; border-radius:10px; background:linear-gradient(to right,var(--primary),var(--gold)); transition:width 1s ease; }
+    .avantages-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-top:24px; }
+    .avantage-card { background:var(--card-bg); border-radius:12px; padding:20px; text-align:center; border:1px solid rgba(255,255,255,0.07); }
+    .avantage-icon { font-size:2rem; margin-bottom:8px; }
+    .avantage-name { font-weight:600; margin-bottom:4px; }
+    .avantage-pts { font-size:0.85rem; color:rgba(255,255,255,0.5); }
+    .history-item { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.07); }
+    .earned { color:#81c784; font-weight:600; }
+    .palier-row { display:flex; align-items:center; gap:16px; padding:14px; border-radius:10px; margin-bottom:10px; background:rgba(255,255,255,0.04); }
+    .palier-row.current { background:rgba(255,126,95,0.15); border:1px solid rgba(255,126,95,0.3); }
+    .palier-icon { font-size:1.8rem; flex-shrink:0; }
+  </style>
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+<button id="back-to-top" aria-label="Retour en haut">↑</button>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="img/logo.jpg" alt="Bella Pizza">
+    <span>Bella Pizza</span>
+  </a>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="reservation.html">Réservation</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="commande.html" class="btn-nav">🛒 Commander <span class="cart-count" id="cart-count">0</span></a></li>
+  </ul>
+</nav>
+
+<main style="padding-top:calc(var(--nav-h)+60px);padding-bottom:80px;padding-left:5%;padding-right:5%;max-width:900px;margin:0 auto;">
+
+  <div class="section-title">
+    <h2>Mon Programme Fidélité</h2>
+    <div class="line"></div>
+    <p style="color:rgba(255,255,255,0.6);margin-top:12px;">10€ dépensés = 1 point. Cumulez des points et débloquez des récompenses !</p>
+  </div>
+
+  <!-- NIVEAU ACTUEL -->
+  <div class="level-card reveal">
+    <span class="level-icon" id="level-icon">🍕</span>
+    <div class="level-name" id="level-name">Débutant</div>
+    <div class="points-big" id="points-display">0</div>
+    <div style="color:rgba(255,255,255,0.55);font-size:0.9rem;margin-top:4px;">points de fidélité</div>
+    <div id="progress-section" style="margin-top:20px;">
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:6px;">
+        <span id="prog-label"></span>
+        <span id="prog-next"></span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PALIERS -->
+  <h3 style="margin-bottom:16px;">Les niveaux</h3>
+  <div class="reveal">
+    <div class="palier-row" id="pal-debutant">
+      <div class="palier-icon">🍕</div>
+      <div style="flex:1">
+        <div style="font-weight:600">Débutant</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.5)">0 points — Pizza offerte à 50pts d'achat</div>
+      </div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.4)">0 → 5 pts</div>
+    </div>
+    <div class="palier-row" id="pal-bronze">
+      <div class="palier-icon">🥉</div>
+      <div style="flex:1">
+        <div style="font-weight:600">Bronze</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.5)">5 points — -5% sur toutes les commandes</div>
+      </div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.4)">5 → 20 pts</div>
+    </div>
+    <div class="palier-row" id="pal-argent">
+      <div class="palier-icon">🥈</div>
+      <div style="flex:1">
+        <div style="font-weight:600">Argent</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.5)">20 points — -10% + livraison offerte</div>
+      </div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.4)">20 → 50 pts</div>
+    </div>
+    <div class="palier-row" id="pal-or">
+      <div class="palier-icon">🥇</div>
+      <div style="flex:1">
+        <div style="font-weight:600">Or</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.5)">50 points — -15% + pizza offerte chaque mois</div>
+      </div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.4)">50+ pts</div>
+    </div>
+  </div>
+
+  <!-- AVANTAGES -->
+  <h3 style="margin:30px 0 16px;">Vos avantages actuels</h3>
+  <div class="avantages-grid reveal" id="avantages-grid"></div>
+
+  <!-- HISTORIQUE POINTS -->
+  <h3 style="margin:30px 0 16px;">Historique des points</h3>
+  <div style="background:var(--card-bg);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,0.07);" class="reveal">
+    <div id="points-history"></div>
+    <div id="no-history" style="text-align:center;color:rgba(255,255,255,0.4);padding:20px;display:none;">Aucun historique pour l'instant.</div>
+  </div>
+
+  <div style="text-align:center;margin-top:30px;">
+    <a href="commande.html" class="btn btn-primary">Commander pour gagner des points →</a>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-bottom">&copy; <span id="year"></span> Bella Pizza — Tous droits réservés</div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/fidelite.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+const btt = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => btt?.classList.toggle('visible', window.scrollY > 300));
+btt?.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+if (localStorage.getItem('darkMode') === '1') document.body.classList.add('dark-mode');
+
+function renderPage() {
+  const data = Fidelite.get();
+  const pts = data.points;
+  const lv = Fidelite.getLevel(pts);
+
+  document.getElementById('level-icon').textContent = lv.icon;
+  document.getElementById('level-name').textContent = lv.name;
+
+  // Compteur animé
+  const el = document.getElementById('points-display');
+  let cur = 0;
+  const inc = Math.max(1, Math.floor(pts / 40));
+  const t = setInterval(() => {
+    cur = Math.min(cur + inc, pts);
+    el.textContent = cur;
+    if (cur >= pts) clearInterval(t);
+  }, 30);
+
+  // Barre de progression
+  if (lv.next) {
+    const from = lv.name === 'Bronze' ? 5 : lv.name === 'Argent' ? 20 : 0;
+    const pct = Math.min(100, ((pts - from) / (lv.next - from)) * 100);
+    setTimeout(() => document.getElementById('progress-bar').style.width = pct + '%', 300);
+    document.getElementById('prog-label').textContent = `${pts} pts`;
+    document.getElementById('prog-next').textContent = `Prochain niveau : ${lv.next} pts (encore ${lv.left})`;
+  } else {
+    document.getElementById('progress-bar').style.width = '100%';
+    document.getElementById('prog-label').textContent = 'Niveau maximum atteint !';
+    document.getElementById('prog-next').textContent = '';
+  }
+
+  // Surbrillance palier courant
+  const palierMap = { 'Débutant': 'pal-debutant', 'Bronze': 'pal-bronze', 'Argent': 'pal-argent', 'Or': 'pal-or' };
+  document.querySelectorAll('.palier-row').forEach(r => r.classList.remove('current'));
+  document.getElementById(palierMap[lv.name])?.classList.add('current');
+
+  // Avantages
+  const avantages = {
+    'Débutant': [{ icon:'🍕', name:'Commande en ligne', desc:'Commandez facilement depuis le site' }],
+    'Bronze':   [{ icon:'🍕', name:'Commande en ligne', desc:'' }, { icon:'💰', name:'-5% sur vos commandes', desc:'Remise automatique' }],
+    'Argent':   [{ icon:'💰', name:'-10% sur vos commandes', desc:'' }, { icon:'🛵', name:'Livraison offerte', desc:'Dès 15€ d\'achat' }],
+    'Or':       [{ icon:'💰', name:'-15% sur vos commandes', desc:'' }, { icon:'🛵', name:'Livraison offerte', desc:'Sans minimum' }, { icon:'🎁', name:'Pizza offerte / mois', desc:'Valeur jusqu\'à 15€' }],
+  };
+  const avs = avantages[lv.name] || [];
+  document.getElementById('avantages-grid').innerHTML = avs.map(a => `
+    <div class="avantage-card">
+      <div class="avantage-icon">${a.icon}</div>
+      <div class="avantage-name">${a.name}</div>
+      ${a.desc ? `<div class="avantage-pts">${a.desc}</div>` : ''}
+    </div>
+  `).join('');
+
+  // Historique
+  const hist = data.history || [];
+  if (!hist.length) {
+    document.getElementById('no-history').style.display = 'block';
+  } else {
+    document.getElementById('points-history').innerHTML = hist.slice(0,10).map(h => `
+      <div class="history-item">
+        <div>
+          <div style="font-weight:500">${h.label}</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.4)">${new Date(h.date).toLocaleDateString('fr-FR')}</div>
+        </div>
+        <span class="earned">+${h.earned} pt${h.earned > 1 ? 's' : ''}</span>
+      </div>
+    `).join('');
+  }
+
+  // IntersectionObserver
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+renderPage();
+</script>
+</body>
+</html>

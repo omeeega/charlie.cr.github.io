@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commander – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/darkmode.css">
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+<button id="back-to-top" aria-label="Retour en haut">↑</button>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="img/logo.jpg" alt="Bella Pizza">
+    <span>Bella Pizza</span>
+  </a>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="reservation.html">Réservation</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="commande.html" class="btn-nav">🛒 Commander <span class="cart-count" id="cart-count">0</span></a></li>
+  </ul>
+</nav>
+
+<main class="cart-page" style="padding-bottom:60px;">
+  <div class="section-title" style="margin-bottom:30px;">
+    <h2>Votre Commande</h2>
+    <div class="line"></div>
+  </div>
+
+  <!-- STEPPER -->
+  <div class="stepper" id="stepper">
+    <div class="step active" id="s1"><div class="step-circle">1</div><div class="step-label">Panier</div></div>
+    <div class="step-line"></div>
+    <div class="step" id="s2"><div class="step-circle">2</div><div class="step-label">Informations</div></div>
+    <div class="step-line"></div>
+    <div class="step" id="s3"><div class="step-circle">3</div><div class="step-label">Confirmation</div></div>
+  </div>
+
+  <!-- ÉTAPE 1 : PANIER -->
+  <div class="step-panel active" id="panel1">
+    <div id="cart-items-list"></div>
+    <div id="empty-msg" style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);display:none;">
+      <p style="font-size:3rem">🍕</p>
+      <p>Votre panier est vide.</p>
+      <a href="menu.html" class="btn btn-primary" style="margin-top:16px;">Voir le menu</a>
+    </div>
+
+    <div class="cart-summary" id="cart-summary">
+      <div class="promo-row">
+        <input type="text" id="promo-input" placeholder="Code promo" aria-label="Code promo">
+        <button class="btn btn-outline" onclick="applyPromo()" style="border-radius:20px;padding:10px 20px;border:2px solid var(--primary);color:#fff;background:transparent;cursor:pointer;">Appliquer</button>
+      </div>
+      <div class="summary-row"><span>Sous-total</span><span id="subtotal">0,00 €</span></div>
+      <div class="summary-row" id="promo-row" style="display:none;color:var(--gold)"><span>Réduction promo</span><span id="promo-discount">-0,00 €</span></div>
+      <div class="summary-row"><span>Livraison</span><span id="delivery-cost">2,50 €</span></div>
+      <div class="summary-row total"><span>Total TTC</span><span id="grand-total">0,00 €</span></div>
+    </div>
+    <div style="text-align:right;margin-top:20px;">
+      <button class="btn btn-primary" id="btn-step2">Continuer →</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 2 : INFOS CLIENT -->
+  <div class="step-panel" id="panel2">
+    <div style="background:var(--card-bg);border-radius:var(--radius);padding:30px;">
+      <h3 style="margin-bottom:24px">Mode de réception</h3>
+      <div class="delivery-choice">
+        <button class="delivery-btn selected" id="btn-livraison" onclick="setDelivery('livraison')">🛵 Livraison à domicile</button>
+        <button class="delivery-btn" id="btn-emporter" onclick="setDelivery('emporter')">🏃 À emporter</button>
+      </div>
+
+      <form id="order-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prenom">Prénom *</label>
+            <input type="text" id="prenom" required placeholder="Jean">
+            <div class="field-error">Ce champ est requis.</div>
+          </div>
+          <div class="form-group">
+            <label for="nom">Nom *</label>
+            <input type="text" id="nom" required placeholder="Dupont">
+            <div class="field-error">Ce champ est requis.</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="tel">Téléphone *</label>
+          <input type="tel" id="tel" required data-type="tel" placeholder="+33 6 12 34 56 78">
+          <div class="field-error">Numéro invalide.</div>
+        </div>
+        <div id="addr-fields">
+          <div class="form-group">
+            <label for="adresse">Adresse de livraison *</label>
+            <input type="text" id="adresse" required placeholder="12 rue des Fleurs">
+            <div class="field-error">Ce champ est requis.</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cp">Code postal *</label>
+              <input type="text" id="cp" required placeholder="31000">
+              <div class="field-error">Ce champ est requis.</div>
+            </div>
+            <div class="form-group">
+              <label for="ville">Ville *</label>
+              <input type="text" id="ville" required placeholder="Toulouse">
+              <div class="field-error">Ce champ est requis.</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="creneau">Créneau souhaité</label>
+          <select id="creneau">
+            <option value="dès que possible">Dès que possible (~30 min)</option>
+            <option value="30-45 min">Dans 30-45 min</option>
+            <option value="45-60 min">Dans 45-60 min</option>
+            <option value="1h-1h30">Dans 1h-1h30</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="instructions">Instructions spéciales</label>
+          <textarea id="instructions" rows="3" placeholder="Interphone, étage, instructions…"></textarea>
+        </div>
+      </form>
+
+      <div style="display:flex;justify-content:space-between;margin-top:20px;flex-wrap:wrap;gap:12px;">
+        <button class="btn btn-outline" onclick="goStep(1)">← Retour</button>
+        <button class="btn btn-primary" onclick="goStep(3)">Récapitulatif →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 3 : RÉCAPITULATIF & CONFIRMATION -->
+  <div class="step-panel" id="panel3">
+    <div style="background:var(--card-bg);border-radius:var(--radius);padding:30px;">
+      <h3 style="margin-bottom:20px">Récapitulatif de votre commande</h3>
+      <div id="recap-items"></div>
+      <div id="recap-infos" style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);line-height:1.8;"></div>
+      <div id="recap-total" style="font-size:1.2rem;font-weight:700;margin-top:16px;color:var(--gold);"></div>
+
+      <div style="display:flex;justify-content:space-between;margin-top:24px;flex-wrap:wrap;gap:12px;">
+        <button class="btn btn-outline" onclick="goStep(2)">← Modifier</button>
+        <button class="btn btn-primary" id="btn-confirm" onclick="confirmOrder()">
+          <span id="confirm-label">✅ Confirmer la commande</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION SUCCÈS -->
+  <div class="step-panel" id="panel4">
+    <div class="confirm-box">
+      <svg class="checkmark" viewBox="0 0 52 52" aria-hidden="true">
+        <circle cx="26" cy="26" r="25"/>
+        <path d="M14 27l7 7 16-16"/>
+      </svg>
+      <h2 style="font-size:2rem;margin-bottom:12px;">Commande confirmée !</h2>
+      <p style="color:rgba(255,255,255,0.75);margin-bottom:8px;">Numéro de commande : <strong id="order-num" style="color:var(--gold)"></strong></p>
+      <p style="color:rgba(255,255,255,0.75);margin-bottom:30px;">Temps estimé : <strong id="order-time" style="color:var(--secondary)"></strong></p>
+      <a href="index.html" class="btn btn-primary">Retour à l'accueil</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-bottom">&copy; <span id="year"></span> Bella Pizza — Tous droits réservés</div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/fidelite.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+const bttC = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => bttC?.classList.toggle('visible', window.scrollY > 300));
+bttC?.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+if (localStorage.getItem('darkMode') === '1') document.body.classList.add('dark-mode');
+
+let deliveryMode = 'livraison';
+let promoApplied = 0;
+const PROMOS = { BELLA10: 0.10, PIZZA20: 0.20 };
+
+function fmt(n) { return n.toFixed(2).replace('.',',') + ' €'; }
+
+function renderCart() {
+  const list = document.getElementById('cart-items-list');
+  const empty = document.getElementById('empty-msg');
+  const summary = document.getElementById('cart-summary');
+  const items = cart.items;
+
+  if (!items.length) { list.innerHTML = ''; empty.style.display = 'block'; summary.style.display = 'none'; return; }
+  empty.style.display = 'none'; summary.style.display = 'block';
+
+  list.innerHTML = items.map(item => `
+    <div class="cart-item" id="ci-${item.id}">
+      <img src="${item.img}" alt="${item.name}">
+      <div class="cart-item-info">
+        <h4>${item.name}</h4>
+        ${item.opts ? `<div class="item-opts">${item.opts}</div>` : ''}
+      </div>
+      <div class="qty-controls">
+        <button class="qty-btn" onclick="updateQty('${item.id}',-1)">−</button>
+        <span class="qty-num">${item.qty}</span>
+        <button class="qty-btn" onclick="updateQty('${item.id}',1)">+</button>
+      </div>
+      <span class="cart-item-price">${fmt(item.price * item.qty)}</span>
+      <button class="btn-remove" onclick="removeItem('${item.id}')" aria-label="Supprimer">✕</button>
+    </div>
+  `).join('');
+
+  updateTotals();
+}
+
+function updateQty(id, delta) {
+  const item = cart.items.find(i => i.id === id);
+  if (item) cart.update(id, item.qty + delta);
+  renderCart();
+}
+function removeItem(id) {
+  const el = document.getElementById('ci-' + id);
+  if (el) { el.style.transition = 'opacity 0.3s,transform 0.3s'; el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; setTimeout(() => { cart.remove(id); renderCart(); }, 300); }
+  else { cart.remove(id); renderCart(); }
+}
+
+function updateTotals() {
+  const sub = cart.total();
+  const deliv = deliveryMode === 'livraison' ? 2.50 : 0;
+  const disc = promoApplied ? sub * promoApplied : 0;
+  const grand = sub - disc + deliv;
+  document.getElementById('subtotal').textContent = fmt(sub);
+  document.getElementById('delivery-cost').textContent = deliveryMode === 'livraison' ? '2,50 €' : 'Gratuit';
+  const promoRow = document.getElementById('promo-row');
+  promoRow.style.display = disc ? 'flex' : 'none';
+  document.getElementById('promo-discount').textContent = '-' + fmt(disc);
+  document.getElementById('grand-total').textContent = fmt(Math.max(grand, 0));
+}
+
+function applyPromo() {
+  const code = document.getElementById('promo-input').value.trim().toUpperCase();
+  if (PROMOS[code]) {
+    promoApplied = PROMOS[code];
+    toast(`Code promo appliqué : -${PROMOS[code]*100}% !`, 'success');
+  } else {
+    toast('Code promo invalide.', 'error');
+  }
+  updateTotals();
+}
+
+function setDelivery(mode) {
+  deliveryMode = mode;
+  document.getElementById('btn-livraison').classList.toggle('selected', mode === 'livraison');
+  document.getElementById('btn-emporter').classList.toggle('selected', mode === 'emporter');
+  document.getElementById('addr-fields').style.display = mode === 'livraison' ? 'block' : 'none';
+  updateTotals();
+}
+
+function goStep(n) {
+  if (n === 2 && !cart.items.length) { toast('Votre panier est vide !', 'error'); return; }
+  if (n === 3) {
+    const form = document.getElementById('order-form');
+    const inputs = [...form.querySelectorAll('input[required]')].filter(i => {
+      if (deliveryMode === 'emporter' && ['adresse','cp','ville'].includes(i.id)) return false;
+      return true;
+    });
+    let valid = true;
+    inputs.forEach(inp => { if (!validateFieldLocal(inp)) valid = false; });
+    if (!valid) { toast('Veuillez remplir tous les champs requis.', 'error'); return; }
+    buildRecap();
+  }
+  [1,2,3].forEach(i => {
+    document.getElementById('panel' + i).classList.toggle('active', i === n);
+    const s = document.getElementById('s' + i);
+    s.classList.toggle('active', i === n);
+    s.classList.toggle('done', i < n);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateFieldLocal(inp) {
+  const valid = inp.value.trim() !== '';
+  inp.classList.toggle('error', !valid);
+  const err = inp.closest('.form-group')?.querySelector('.field-error');
+  if (err) err.classList.toggle('show', !valid);
+  return valid;
+}
+
+function buildRecap() {
+  const items = cart.items;
+  document.getElementById('recap-items').innerHTML = items.map(i => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);"><span>${i.name} × ${i.qty}</span><span style="color:var(--gold)">${fmt(i.price*i.qty)}</span></div>`).join('');
+  const prenom = document.getElementById('prenom').value;
+  const nom = document.getElementById('nom').value;
+  const tel = document.getElementById('tel').value;
+  const creneau = document.getElementById('creneau').value;
+  let infos = `<strong>Client :</strong> ${prenom} ${nom}<br><strong>Téléphone :</strong> ${tel}<br>`;
+  if (deliveryMode === 'livraison') {
+    const addr = document.getElementById('adresse').value + ', ' + document.getElementById('cp').value + ' ' + document.getElementById('ville').value;
+    infos += `<strong>Adresse :</strong> ${addr}<br>`;
+  } else infos += `<strong>Mode :</strong> À emporter<br>`;
+  infos += `<strong>Créneau :</strong> ${creneau}`;
+  const inst = document.getElementById('instructions').value;
+  if (inst) infos += `<br><strong>Instructions :</strong> ${inst}`;
+  document.getElementById('recap-infos').innerHTML = infos;
+
+  const sub = cart.total();
+  const deliv = deliveryMode === 'livraison' ? 2.50 : 0;
+  const disc = promoApplied ? sub * promoApplied : 0;
+  document.getElementById('recap-total').textContent = 'Total : ' + fmt(Math.max(sub - disc + deliv, 0));
+}
+
+function confirmOrder() {
+  const btn = document.getElementById('btn-confirm');
+  btn.disabled = true;
+  btn.innerHTML = '<span id="confirm-label">⏳ En cours…</span>';
+  setTimeout(() => {
+    const orderNum = 'BP-' + Date.now().toString(36).toUpperCase();
+    const time = deliveryMode === 'livraison' ? '25-35 minutes' : '15-20 minutes (à emporter)';
+    document.getElementById('order-num').textContent = orderNum;
+    document.getElementById('order-time').textContent = time;
+
+    // Sauvegarde locale
+    const orders = JSON.parse(localStorage.getItem('bellaPizzaOrders') || '[]');
+    orders.push({ num: orderNum, items: cart.items, mode: deliveryMode, date: new Date().toISOString() });
+    localStorage.setItem('bellaPizzaOrders', JSON.stringify(orders));
+
+    cart.clear();
+    [1,2,3].forEach(i => { document.getElementById('panel'+i).classList.remove('active'); document.getElementById('s'+i).classList.remove('active','done'); });
+    document.getElementById('panel4').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 1500);
+}
+
+renderCart();
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+/* ── EFFETS VISUELS PREMIUM ──────────────────────────────── */
+
+/* Liquid button */
+.btn-liquid {
+  position: relative; overflow: hidden;
+  transition: border-radius 0.4s ease, transform 0.3s ease;
+}
+.btn-liquid:hover {
+  border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%;
+  transform: scale(1.04);
+}
+.btn-liquid:active { border-radius: 50%; transform: scale(0.97); }
+
+/* Glitch effect (une seule fois au chargement) */
+.glitch {
+  position: relative;
+  animation: glitch-main 0.4s ease 0.5s 1;
+}
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0;
+}
+.glitch::before {
+  color: #ff7e5f; clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+  animation: glitch-before 0.4s ease 0.5s 1;
+}
+.glitch::after {
+  color: #feb47b; clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+  animation: glitch-after 0.4s ease 0.5s 1;
+}
+
+@keyframes glitch-main {
+  0%,100% { transform: translate(0); }
+  20%      { transform: translate(-2px, 2px); }
+  40%      { transform: translate(2px, -2px); }
+  60%      { transform: translate(-1px, 1px); }
+}
+@keyframes glitch-before {
+  0%,100% { opacity:0; transform: translate(0); }
+  20%,80% { opacity:0.8; transform: translate(-3px); }
+  50%     { opacity:0.4; transform: translate(3px); }
+}
+@keyframes glitch-after {
+  0%,100% { opacity:0; transform: translate(0); }
+  30%,70% { opacity:0.8; transform: translate(3px); }
+  60%     { opacity:0.4; transform: translate(-3px); }
+}
+
+/* Frosted glass */
+.glass {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Neon glow (activé la nuit par JS via .neon-mode) */
+body.neon-mode .btn-primary {
+  box-shadow: 0 0 10px var(--primary), 0 0 30px rgba(255,126,95,0.4), 0 0 60px rgba(255,126,95,0.2);
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+body.neon-mode .nav-logo span {
+  text-shadow: 0 0 8px var(--primary), 0 0 20px rgba(255,126,95,0.6);
+}
+body.neon-mode .price { text-shadow: 0 0 8px var(--gold), 0 0 16px rgba(248,180,0,0.5); }
+
+@keyframes neon-pulse {
+  0%,100% { box-shadow: 0 0 10px var(--primary), 0 0 30px rgba(255,126,95,0.4); }
+  50%     { box-shadow: 0 0 20px var(--primary), 0 0 50px rgba(255,126,95,0.6), 0 0 80px rgba(255,126,95,0.3); }
+}
+
+/* Page transition overlay */
+#page-transition {
+  position: fixed; inset: 0; z-index: 10000;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+#page-transition.entering { animation: curtain-in 0.4s ease forwards; }
+#page-transition.exiting  { animation: curtain-out 0.4s ease forwards; }
+
+@keyframes curtain-in  { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+@keyframes curtain-out { from { transform: translateY(0); } to { transform: translateY(100%); } }
+
+/* Progress bar de chargement */
+#page-progress {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 9999;
+  background: linear-gradient(to right, var(--primary), var(--gold));
+  width: 0; transition: width 0.3s ease;
+}
+
+/* Clip-path reveal */
+.clip-reveal {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+}
+.clip-reveal.visible { clip-path: inset(0 0% 0 0); }
+
+/* Magnetic button zone */
+.magnetic { transition: transform 0.2s ease; display: inline-block; }
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--primary), var(--secondary)); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* Blob animé */
+.hero-blob {
+  position: absolute; z-index: 0; opacity: 0.08;
+  animation: blob-morph 8s ease-in-out infinite;
+  filter: blur(40px);
+}
+@keyframes blob-morph {
+  0%,100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  33%     { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  66%     { border-radius: 40% 60% 40% 60% / 40% 50% 60% 50%; }
+}
+
+/* Word reveal */
+.word-reveal .word {
+  display: inline-block; opacity: 0; transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.word-reveal.visible .word { opacity: 1; transform: translateY(0); }

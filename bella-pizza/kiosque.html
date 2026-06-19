@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Borne de commande – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/kiosque.css">
+  <style>
+    :root {
+      --primary:#ff7e5f; --secondary:#feb47b; --gold:#f8b400;
+      --card-bg:rgba(30,30,30,0.95); --radius:16px;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#111; color:#fff; font-family:'Roboto',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+    /* Kiosk layout */
+    .kiosque-header { background:linear-gradient(135deg,#ff7e5f,#feb47b); padding:24px 40px; display:flex; justify-content:space-between; align-items:center; }
+    .kiosque-header .logo { display:flex; align-items:center; gap:16px; font-size:1.8rem; font-weight:900; }
+    .kiosque-header .logo img { width:60px; height:60px; border-radius:50%; }
+    .table-num { background:rgba(0,0,0,0.25); border-radius:12px; padding:10px 22px; font-size:1.1rem; font-weight:700; }
+
+    /* Stepper */
+    .kiosk-stepper { display:flex; justify-content:center; gap:0; background:rgba(255,255,255,0.06); }
+    .kiosk-step { flex:1; padding:18px; text-align:center; font-size:1rem; color:rgba(255,255,255,0.45); border-bottom:4px solid transparent; transition:all 0.3s; max-width:200px; }
+    .kiosk-step.active { color:#fff; border-bottom-color:var(--primary); background:rgba(255,126,95,0.1); }
+    .kiosk-step.done { color:rgba(255,255,255,0.6); border-bottom-color:#4caf50; }
+
+    /* Main content area */
+    .kiosk-body { padding:30px 40px; min-height:calc(100vh - 180px); }
+
+    /* Category tabs */
+    .cat-tabs { display:flex; gap:12px; overflow-x:auto; padding-bottom:16px; margin-bottom:24px; scrollbar-width:none; }
+    .cat-tab { flex-shrink:0; padding:14px 28px; background:rgba(255,255,255,0.07); border-radius:50px; font-size:1rem; cursor:pointer; border:2px solid rgba(255,255,255,0.1); transition:all 0.2s; white-space:nowrap; }
+    .cat-tab.active { background:rgba(255,126,95,0.25); border-color:var(--primary); color:#fff; }
+
+    /* Pizza grid — large touch targets */
+    .pizza-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; }
+    .kiosk-pizza-card { background:var(--card-bg); border-radius:20px; padding:24px; border:2px solid rgba(255,255,255,0.08); cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
+    .kiosk-pizza-card:hover { border-color:var(--primary); transform:scale(1.02); }
+    .kiosk-pizza-card .emoji { font-size:3.5rem; display:block; text-align:center; margin-bottom:12px; }
+    .kiosk-pizza-card .name { font-size:1.2rem; font-weight:700; margin-bottom:6px; }
+    .kiosk-pizza-card .desc { font-size:0.88rem; color:rgba(255,255,255,0.5); margin-bottom:14px; line-height:1.5; }
+    .kiosk-pizza-card .price { font-size:1.4rem; font-weight:700; color:var(--gold); }
+    .add-kiosk-btn { position:absolute; bottom:20px; right:20px; width:46px; height:46px; border-radius:50%; background:var(--primary); border:none; font-size:1.6rem; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; transition:transform 0.2s; }
+    .add-kiosk-btn:active { transform:scale(0.9); }
+    .add-kiosk-btn::after { content:''; position:absolute; inset:0; border-radius:50%; background:rgba(255,255,255,0.3); transform:scale(0); transition:transform 0.4s; }
+    .add-kiosk-btn:active::after { transform:scale(2); opacity:0; }
+
+    /* Cart sidebar (slide-in) */
+    .kiosk-cart { position:fixed; right:0; top:0; bottom:0; width:380px; background:#1a1a1a; box-shadow:-10px 0 40px rgba(0,0,0,0.5); padding:30px 24px; display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); z-index:200; }
+    .kiosk-cart.open { transform:translateX(0); }
+    .kiosk-cart h3 { font-size:1.3rem; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; }
+    .cart-items { flex:1; overflow-y:auto; }
+    .kiosk-cart-item { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .kci-name { font-size:0.95rem; }
+    .kci-qty { display:flex; align-items:center; gap:10px; }
+    .kci-qty button { width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,0.2); background:none; color:#fff; font-size:1.2rem; cursor:pointer; transition:background 0.2s; }
+    .kci-qty button:hover { background:rgba(255,126,95,0.3); }
+    .kci-price { color:var(--gold); font-weight:600; }
+
+    .cart-total-row { border-top:2px solid rgba(255,255,255,0.1); padding-top:16px; margin-top:auto; }
+    .cart-total-row .total-amount { font-size:1.8rem; font-weight:900; color:var(--gold); }
+
+    /* Checkout overlay */
+    .checkout-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:300; justify-content:center; align-items:center; }
+    .checkout-overlay.active { display:flex; }
+    .checkout-box { background:#1e1e1e; border-radius:24px; padding:40px; max-width:500px; width:90%; text-align:center; }
+    .checkout-box h2 { font-size:1.8rem; margin-bottom:20px; }
+    .payment-btns { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:24px 0; }
+    .pay-btn { padding:24px; border-radius:16px; border:2px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); cursor:pointer; font-size:1rem; transition:all 0.2s; }
+    .pay-btn:hover { border-color:var(--primary); background:rgba(255,126,95,0.15); }
+    .pay-btn .pay-icon { font-size:2rem; display:block; margin-bottom:6px; }
+
+    /* Success screen */
+    .success-screen { display:none; text-align:center; padding:60px 20px; }
+    .success-screen.active { display:block; }
+    .success-checkmark { font-size:5rem; animation:bounceIn 0.6s; }
+    .success-order-num { font-size:3rem; font-weight:900; color:var(--gold); margin:16px 0; }
+    .ticket { background:rgba(255,255,255,0.05); border-radius:16px; padding:24px; margin:20px auto; max-width:360px; border:1px dashed rgba(255,255,255,0.15); }
+    .ticket-row { display:flex; justify-content:space-between; padding:6px 0; font-size:0.9rem; }
+
+    /* Footer */
+    .kiosk-footer { background:rgba(0,0,0,0.4); padding:16px 40px; display:flex; justify-content:space-between; align-items:center; }
+    .idle-bar { width:200px; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden; }
+    .idle-fill { height:100%; background:var(--primary); width:100%; transition:width 1s linear; }
+
+    /* Float cart button */
+    .cart-float { position:fixed; bottom:30px; right:30px; background:var(--primary); border:none; border-radius:20px; padding:16px 28px; font-size:1.1rem; color:#fff; font-weight:700; cursor:pointer; box-shadow:0 8px 24px rgba(255,126,95,0.4); z-index:150; display:flex; align-items:center; gap:10px; transition:transform 0.2s; }
+    .cart-float:active { transform:scale(0.95); }
+    .cart-float .count-badge { background:#fff; color:var(--primary); width:24px; height:24px; border-radius:50%; font-size:0.8rem; display:flex; align-items:center; justify-content:center; font-weight:900; }
+
+    @keyframes bounceIn { 0%{transform:scale(0.3);opacity:0} 60%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="kiosque-header">
+  <div class="logo">
+    <img src="img/logo.jpg" alt="Bella Pizza">
+    Bella Pizza
+  </div>
+  <div style="text-align:center">
+    <div style="font-size:0.8rem;opacity:0.8">Numéro de table</div>
+    <select id="table-select" style="background:rgba(0,0,0,0.3);border:none;color:#fff;font-size:1.2rem;font-weight:700;text-align:center;border-radius:8px;padding:4px 10px">
+      <option value="">— Sélectionner —</option>
+      <option value="1">Table 1</option><option value="2">Table 2</option>
+      <option value="3">Table 3</option><option value="4">Table 4</option>
+      <option value="5">Table 5</option><option value="6">Table 6</option>
+      <option value="7">Table 7</option><option value="8">Table 8</option>
+      <option value="9">Table 9</option><option value="10">Table 10</option>
+    </select>
+  </div>
+  <div style="font-size:1.1rem;font-weight:700" id="kiosk-time">—</div>
+</div>
+
+<!-- Stepper -->
+<div class="kiosk-stepper">
+  <div class="kiosk-step active" id="kstep-0">📋 Sélection</div>
+  <div class="kiosk-step" id="kstep-1">🛒 Panier</div>
+  <div class="kiosk-step" id="kstep-2">💳 Paiement</div>
+  <div class="kiosk-step" id="kstep-3">✅ Confirmation</div>
+</div>
+
+<!-- Main body -->
+<div class="kiosk-body" id="kiosk-main">
+  <!-- Category tabs -->
+  <div class="cat-tabs">
+    <div class="cat-tab active" data-cat="all">🍕 Toutes</div>
+    <div class="cat-tab" data-cat="classique">Classiques</div>
+    <div class="cat-tab" data-cat="vegetarienne">Végétariennes</div>
+    <div class="cat-tab" data-cat="speciale">Spéciales</div>
+    <div class="cat-tab" data-cat="boisson">🥤 Boissons</div>
+    <div class="cat-tab" data-cat="dessert">🍰 Desserts</div>
+  </div>
+
+  <div class="pizza-grid" id="kiosk-grid"></div>
+</div>
+
+<!-- Success screen -->
+<div class="success-screen" id="success-screen">
+  <div class="success-checkmark">✅</div>
+  <h2 style="margin-top:16px;font-size:2rem">Commande enregistrée !</h2>
+  <div class="success-order-num" id="suc-order-num">BP-0000</div>
+  <div class="ticket" id="suc-ticket"></div>
+  <p style="color:rgba(255,255,255,0.5);font-size:1rem;margin:16px 0">Votre pizza sera prête dans environ <strong style="color:var(--gold)">15-20 min</strong>.</p>
+  <button class="btn" style="background:var(--primary);color:#fff;padding:18px 40px;border-radius:14px;font-size:1.1rem;border:none;cursor:pointer;margin-top:10px" onclick="resetKiosk()">
+    Nouvelle commande
+  </button>
+</div>
+
+<!-- Cart sidebar -->
+<div class="kiosk-cart" id="kiosk-cart">
+  <h3>Votre panier <button onclick="closeCart()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:1.4rem;cursor:pointer">✕</button></h3>
+  <div class="cart-items" id="kiosk-cart-items"></div>
+  <div class="cart-total-row">
+    <div style="display:flex;justify-content:space-between;margin-bottom:16px">
+      <span style="color:rgba(255,255,255,0.5)">Total</span>
+      <span class="total-amount" id="kiosk-total">0,00 €</span>
+    </div>
+    <button class="btn" style="width:100%;background:var(--primary);color:#fff;padding:18px;border-radius:14px;font-size:1.1rem;border:none;cursor:pointer" onclick="showCheckout()">
+      💳 Passer au paiement
+    </button>
+  </div>
+</div>
+
+<!-- Cart float button -->
+<button class="cart-float" id="cart-float-btn" onclick="openCart()">
+  🛒 Panier <span class="count-badge" id="kiosk-count">0</span>
+</button>
+
+<!-- Checkout overlay -->
+<div class="checkout-overlay" id="checkout-overlay">
+  <div class="checkout-box">
+    <h2>💳 Choisissez votre mode de paiement</h2>
+    <p style="color:rgba(255,255,255,0.5);margin-bottom:4px">Total : <strong style="color:var(--gold);font-size:1.4rem" id="pay-total">0,00 €</strong></p>
+    <div class="payment-btns">
+      <button class="pay-btn" onclick="processPayment('CB')"><span class="pay-icon">💳</span>Carte bancaire</button>
+      <button class="pay-btn" onclick="processPayment('Espèces')"><span class="pay-icon">💵</span>Espèces</button>
+      <button class="pay-btn" onclick="processPayment('Ticket')"><span class="pay-icon">🎟</span>Ticket resto</button>
+      <button class="pay-btn" onclick="processPayment('Mobile')"><span class="pay-icon">📱</span>Paiement mobile</button>
+    </div>
+    <button style="background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:0.9rem" onclick="closeCheckout()">← Retour</button>
+  </div>
+</div>
+
+<!-- Idle timer bar -->
+<div class="kiosk-footer">
+  <div style="font-size:0.85rem;color:rgba(255,255,255,0.35)">Inactif depuis…</div>
+  <div class="idle-bar"><div class="idle-fill" id="idle-fill"></div></div>
+  <button style="background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85rem" onclick="resetIdle()">Réinitialiser</button>
+</div>
+
+<script>
+const ITEMS = [
+  { id:1,  name:'Margherita',      emoji:'🍕', cat:'classique',    price:10.5, desc:'Sauce tomate, mozzarella, basilic frais' },
+  { id:2,  name:'Pepperoni',       emoji:'🌶', cat:'classique',    price:12.5, desc:'Sauce tomate, mozzarella, pepperoni croustillant' },
+  { id:3,  name:'4 Fromages',      emoji:'🧀', cat:'classique',    price:13,   desc:'Mozzarella, gorgonzola, chèvre, parmesan' },
+  { id:4,  name:'Végétarienne',    emoji:'🥗', cat:'vegetarienne', price:12,   desc:'Légumes frais de saison, sans viande' },
+  { id:5,  name:'Chèvre-Miel',     emoji:'🍯', cat:'speciale',     price:13.5, desc:'Chèvre, miel de lavande, noix, roquette' },
+  { id:6,  name:'Savoyarde',       emoji:'🏔', cat:'speciale',     price:14,   desc:'Reblochon, lardons, pommes de terre, crème' },
+  { id:7,  name:'Calzone',         emoji:'🫓', cat:'classique',    price:13,   desc:'Farcie mozzarella, jambon, champignons' },
+  { id:8,  name:'Reine',           emoji:'👑', cat:'classique',    price:12,   desc:'Jambon, champignons, mozzarella, sauce tomate' },
+  { id:9,  name:'Normande',        emoji:'🍎', cat:'speciale',     price:13.5, desc:'Camembert, poulet, pomme, cidre réduit' },
+  { id:10, name:'Soda 33cl',       emoji:'🥤', cat:'boisson',      price:2.5,  desc:'Coca, Fanta, Sprite, eau pétillante' },
+  { id:11, name:'Eau 50cl',        emoji:'💧', cat:'boisson',      price:1.5,  desc:'Eau minérale plate' },
+  { id:12, name:'Tiramisu',        emoji:'🍰', cat:'dessert',      price:5.5,  desc:'Mascarpone, café, biscuits, cacao' },
+  { id:13, name:'Fondant choco',   emoji:'🍫', cat:'dessert',      price:5,    desc:'Cœur coulant chocolat, crème anglaise' },
+];
+
+let kiosk_cart = [];
+let currentCat = 'all';
+
+function renderGrid() {
+  const filtered = currentCat === 'all' ? ITEMS : ITEMS.filter(i=>i.cat===currentCat);
+  const grid = document.getElementById('kiosk-grid');
+  grid.innerHTML = filtered.map(it => `
+    <div class="kiosk-pizza-card" onclick="addItem(${it.id})">
+      <span class="emoji">${it.emoji}</span>
+      <div class="name">${it.name}</div>
+      <div class="desc">${it.desc}</div>
+      <div class="price">${it.price.toFixed(2).replace('.',',')} €</div>
+      <button class="add-kiosk-btn" onclick="event.stopPropagation();addItem(${it.id})">+</button>
+    </div>
+  `).join('');
+}
+
+document.querySelectorAll('.cat-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    currentCat = tab.dataset.cat;
+    renderGrid();
+  });
+});
+
+function addItem(id) {
+  const item = ITEMS.find(i=>i.id===id);
+  if (!item) return;
+  const existing = kiosk_cart.find(i=>i.id===id);
+  if (existing) existing.qty++;
+  else kiosk_cart.push({...item, qty:1});
+  updateCartUI();
+  resetIdle();
+  // Bounce animation on float
+  const btn = document.getElementById('cart-float-btn');
+  btn.style.transform = 'scale(1.15)';
+  setTimeout(() => btn.style.transform = '', 200);
+}
+
+function removeItem(id) {
+  kiosk_cart = kiosk_cart.filter(i=>i.id!==id);
+  updateCartUI();
+}
+
+function changeQty(id, delta) {
+  const item = kiosk_cart.find(i=>i.id===id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) removeItem(id);
+  else updateCartUI();
+}
+
+function updateCartUI() {
+  const total = kiosk_cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const count = kiosk_cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('kiosk-count').textContent = count;
+  document.getElementById('kiosk-total').textContent = total.toFixed(2).replace('.',',') + ' €';
+  document.getElementById('pay-total').textContent = total.toFixed(2).replace('.',',') + ' €';
+  document.getElementById('cart-float-btn').style.display = count > 0 ? 'flex' : 'none';
+
+  document.getElementById('kiosk-cart-items').innerHTML = kiosk_cart.length === 0
+    ? '<p style="color:rgba(255,255,255,0.3);text-align:center;padding:20px">Votre panier est vide</p>'
+    : kiosk_cart.map(i => `
+      <div class="kiosk-cart-item">
+        <div class="kci-name">${i.emoji} ${i.name}</div>
+        <div class="kci-qty">
+          <button onclick="changeQty(${i.id},-1)">−</button>
+          <span>${i.qty}</span>
+          <button onclick="changeQty(${i.id},1)">+</button>
+        </div>
+        <div class="kci-price">${(i.price*i.qty).toFixed(2).replace('.',',')} €</div>
+      </div>
+    `).join('');
+}
+
+function openCart()  { document.getElementById('kiosk-cart').classList.add('open'); setStep(1); }
+function closeCart() { document.getElementById('kiosk-cart').classList.remove('open'); setStep(0); }
+
+function showCheckout() {
+  closeCart();
+  document.getElementById('checkout-overlay').classList.add('active');
+  setStep(2);
+}
+function closeCheckout() { document.getElementById('checkout-overlay').classList.remove('active'); setStep(1); }
+
+function setStep(n) {
+  for(let i=0;i<4;i++){
+    const el=document.getElementById('kstep-'+i);
+    el.classList.remove('active','done');
+    if(i<n) el.classList.add('done');
+    else if(i===n) el.classList.add('active');
+  }
+}
+
+function processPayment(mode) {
+  closeCheckout();
+  const num = 'BP-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  const total = kiosk_cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const table = document.getElementById('table-select').value || '?';
+
+  // Save order
+  const orders = JSON.parse(localStorage.getItem('bellaPizzaOrders') || '[]');
+  orders.push({ num, date:new Date().toISOString(), mode:'sur place', table, items:kiosk_cart.map(i=>({name:i.name,price:i.price,qty:i.qty})), payment:mode });
+  localStorage.setItem('bellaPizzaOrders', JSON.stringify(orders));
+
+  // Show success
+  setStep(3);
+  document.getElementById('kiosk-main').style.display = 'none';
+  document.getElementById('success-screen').classList.add('active');
+  document.getElementById('suc-order-num').textContent = num;
+  document.getElementById('suc-ticket').innerHTML = `
+    <div class="ticket-row"><span>Table</span><strong>${table}</strong></div>
+    <div class="ticket-row"><span>Mode paiement</span><strong>${mode}</strong></div>
+    ${kiosk_cart.map(i=>`<div class="ticket-row"><span>${i.emoji} ${i.name} ×${i.qty}</span><strong>${(i.price*i.qty).toFixed(2)} €</strong></div>`).join('')}
+    <div class="ticket-row" style="border-top:1px dashed rgba(255,255,255,0.2);margin-top:8px;padding-top:8px;font-size:1rem"><span>Total</span><strong style="color:var(--gold)">${total.toFixed(2)} €</strong></div>
+  `;
+}
+
+function resetKiosk() {
+  kiosk_cart = [];
+  updateCartUI();
+  setStep(0);
+  document.getElementById('kiosk-main').style.display = '';
+  document.getElementById('success-screen').classList.remove('active');
+  resetIdle();
+}
+
+// Clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById('kiosk-time').textContent = now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+updateClock(); setInterval(updateClock, 1000);
+
+// Idle timer — reset kiosk after 2 min
+const IDLE_TIMEOUT = 120;
+let idleSeconds = IDLE_TIMEOUT;
+let idleInterval;
+
+function resetIdle() {
+  idleSeconds = IDLE_TIMEOUT;
+  document.getElementById('idle-fill').style.width = '100%';
+}
+
+function startIdleTimer() {
+  idleInterval = setInterval(() => {
+    if (kiosk_cart.length > 0 || document.getElementById('checkout-overlay').classList.contains('active')) { resetIdle(); return; }
+    idleSeconds--;
+    document.getElementById('idle-fill').style.width = (idleSeconds / IDLE_TIMEOUT * 100) + '%';
+    if (idleSeconds <= 0) {
+      resetKiosk();
+      resetIdle();
+      document.getElementById('table-select').value = '';
+    }
+  }, 1000);
+}
+
+['mousemove','touchstart','keydown','click'].forEach(ev => document.addEventListener(ev, resetIdle, {passive:true}));
+
+renderGrid();
+updateCartUI();
+startIdleTimer();
+</script>
+</body>
+</html>

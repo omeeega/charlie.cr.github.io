@@ -1,0 +1,16 @@
+{
+  "name": "Bella Pizza Toulouse",
+  "short_name": "Bella Pizza",
+  "description": "Commandez vos pizzas artisanales en ligne — livraison Toulouse",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#ff7e5f",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "img/logo.jpg", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "img/logo.jpg", "sizes": "512x512", "type": "image/jpeg" }
+  ],
+  "categories": ["food", "shopping"],
+  "lang": "fr-FR"
+}

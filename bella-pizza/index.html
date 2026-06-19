@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bella Pizza – Toulouse</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/darkmode.css">
+</head>
+<body>
+
+<!-- CURSEUR PERSONNALISÉ -->
+<div id="custom-cursor"></div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- BACK TO TOP -->
+<button id="back-to-top" aria-label="Retour en haut">↑</button>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="img/logo.jpg" alt="Bella Pizza logo">
+    <span>Bella Pizza</span>
+  </a>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="reservation.html">Réservation</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li>
+      <a href="mes-points.html" class="fidelite-badge" title="Mes points fidélité">
+        🌟 <span class="fidelite-points">0</span> pts
+      </a>
+    </li>
+    <li>
+      <button class="search-trigger" aria-label="Rechercher" style="background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.3);border-radius:20px;color:#fff;padding:8px 14px;cursor:pointer;font-size:0.95rem;">🔍</button>
+    </li>
+    <li>
+      <button class="dark-toggle" id="dark-toggle" aria-label="Basculer le mode sombre" title="Mode sombre"></button>
+    </li>
+    <li><a href="commande.html" class="btn-nav">🛒 Commander <span class="cart-count" id="cart-count">0</span></a></li>
+  </ul>
+</nav>
+
+<!-- TICKER PROMOTIONS -->
+<div class="ticker-wrap" style="margin-top:70px;">
+  <span class="ticker-text">
+    🍕 Bienvenue chez Bella Pizza Toulouse &nbsp;|&nbsp;
+    🔥 Pizza du mois : Chèvre-Miel &nbsp;|&nbsp;
+    🎉 Code BELLA10 : -10% sur votre première commande &nbsp;|&nbsp;
+    🛵 Livraison gratuite dès 30€ d'achat &nbsp;|&nbsp;
+    ⭐ 3× Champion du monde de pizza classica &nbsp;|&nbsp;
+    📞 +33 7 49 01 46 75 &nbsp;|&nbsp;
+    ⏰ Ouvert Lun–Sam 11h30–22h (23h30 week-end)
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span>
+</div>
+
+<!-- HERO -->
+<section class="hero" aria-label="Bannière principale">
+  <div class="hero-bg" role="img" aria-label="Pizza artisanale Bella Pizza"></div>
+  <div class="hero-content">
+    <div class="hero-badge anim-float">🔥 Fait maison depuis 1986</div>
+    <h1>L'Authentique Pizza<br>Toulousaine</h1>
+    <p>Pâte artisanale, four à bois, produits frais et locaux.<br>Une tradition familiale au cœur de Toulouse.</p>
+    <div class="hero-btns">
+      <a href="commande.html" class="btn btn-primary btn-ripple">Commander maintenant</a>
+      <a href="menu.html" class="btn btn-outline">Voir le menu →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SPÉCIALITÉS -->
+<section id="specialites">
+  <div class="section-title reveal">
+    <h2>Nos Pizzas Vedettes</h2>
+    <div class="line"></div>
+  </div>
+  <div class="pizza-grid">
+
+    <article class="pizza-card reveal">
+      <div class="card-img">
+        <img src="img/pizza-margherita.jpg" alt="Pizza Margherita" loading="lazy">
+        <span class="badge badge-best">Best-seller</span>
+      </div>
+      <div class="card-body">
+        <h3>Margherita</h3>
+        <p class="ingredients">Tomate, mozzarella fraîche, basilic, huile d'olive</p>
+        <div class="card-footer">
+          <span class="price">10,90 €</span>
+          <button class="btn-add btn-ripple" onclick="addWithAnim(this,'margherita','Margherita',10.90,'img/pizza-margherita.jpg')">+ Ajouter</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="pizza-card reveal">
+      <div class="card-img">
+        <img src="img/pizza-pepperoni.jpg" alt="Pizza Pepperoni" loading="lazy">
+        <span class="badge badge-best">Best-seller</span>
+      </div>
+      <div class="card-body">
+        <h3>Pepperoni</h3>
+        <p class="ingredients">Tomate, mozzarella, généreux pepperoni</p>
+        <div class="card-footer">
+          <span class="price">15,99 €</span>
+          <button class="btn-add btn-ripple" onclick="addWithAnim(this,'pepperoni','Pepperoni',15.99,'img/pizza-pepperoni.jpg')">+ Ajouter</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="pizza-card reveal">
+      <div class="card-img">
+        <img src="img/pizza-4fromages.jpg" alt="Pizza 4 Fromages" loading="lazy">
+      </div>
+      <div class="card-body">
+        <h3>4 Fromages</h3>
+        <p class="ingredients">Mozzarella, gorgonzola, emmental, chèvre</p>
+        <div class="card-footer">
+          <span class="price">12,50 €</span>
+          <button class="btn-add btn-ripple" onclick="addWithAnim(this,'4fromages','4 Fromages',12.50,'img/pizza-4fromages.jpg')">+ Ajouter</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="pizza-card reveal">
+      <div class="card-img">
+        <img src="img/pizza-vegetarienne.jpg" alt="Pizza Végétarienne" loading="lazy">
+        <span class="badge badge-veg">Végé</span>
+      </div>
+      <div class="card-body">
+        <h3>Végétarienne</h3>
+        <p class="ingredients">Tomate, légumes de saison, herbes fraîches</p>
+        <div class="card-footer">
+          <span class="price">11,00 €</span>
+          <button class="btn-add btn-ripple" onclick="addWithAnim(this,'vegetarienne','Végétarienne',11.00,'img/pizza-vegetarienne.jpg')">+ Ajouter</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="pizza-card reveal">
+      <div class="card-img">
+        <img src="img/pizza-chevre-miel.jpg" alt="Pizza Chèvre-Miel" loading="lazy">
+        <span class="badge badge-new">Pizza du mois</span>
+      </div>
+      <div class="card-body">
+        <h3>Chèvre-Miel</h3>
+        <p class="ingredients">Crème, chèvre frais, miel de fleurs, noix, roquette</p>
+        <div class="card-footer">
+          <span class="price">12,00 €</span>
+          <button class="btn-add btn-ripple" onclick="addWithAnim(this,'chevre-miel','Chèvre-Miel',12.00,'img/pizza-chevre-miel.jpg')">+ Ajouter</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="pizza-card reveal">
+      <div class="card-img">
+        <img src="img/pizza-savoyarde.jpg" alt="Pizza Savoyarde" loading="lazy">
+      </div>
+      <div class="card-body">
+        <h3>Savoyarde</h3>
+        <p class="ingredients">Crème, reblochon fondant, lardons, pommes de terre</p>
+        <div class="card-footer">
+          <span class="price">14,00 €</span>
+          <button class="btn-add btn-ripple" onclick="addWithAnim(this,'savoyarde','Savoyarde',14.00,'img/pizza-savoyarde.jpg')">+ Ajouter</button>
+        </div>
+      </div>
+    </article>
+
+  </div>
+  <div style="text-align:center; margin-top:40px;">
+    <a href="menu.html" class="btn btn-outline btn-ripple">Voir toutes nos pizzas →</a>
+  </div>
+</section>
+
+<!-- À PROPOS -->
+<section style="background:rgba(0,0,0,0.35);">
+  <div class="section-title reveal"><h2>Notre Histoire</h2><div class="line"></div></div>
+  <div class="about-grid">
+    <div class="about-img reveal">
+      <img src="img/moi.jpg" alt="Massimo, pizzaïolo de Bella Pizza" loading="lazy">
+    </div>
+    <div class="about-text reveal">
+      <h2>"Un savoir-faire familial et authentique depuis 1986"</h2>
+      <p>Chez Bella Pizza, tout commence par une passion transmise de génération en génération. Notre pâte artisanale est préparée chaque matin à partir de farine italienne de qualité supérieure, pétrie à la main et cuite au feu de bois.</p>
+      <p>Nos pizzaïolos sélectionnent chaque ingrédient avec soin : légumes frais des producteurs locaux, fromages affinés, charcuteries d'exception. Trois fois champions du monde de pizza classica.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="num" data-target="38" data-suffix=" ans">0</div>
+          <div class="label">D'expérience</div>
+        </div>
+        <div class="stat">
+          <div class="num" data-target="250000" data-suffix="+">0</div>
+          <div class="label">Pizzas vendues</div>
+        </div>
+        <div class="stat">
+          <div class="num" data-target="3">0</div>
+          <div class="label">Titres champion du monde</div>
+        </div>
+        <div class="stat">
+          <div class="num" data-target="30">0</div>
+          <div class="label">Restaurants franchisés</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALERIE PHOTOS -->
+<section>
+  <div class="section-title reveal"><h2>Notre Pizzeria</h2><div class="line"></div></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;" class="reveal">
+    <div style="border-radius:12px;overflow:hidden;height:200px;"><img src="img/pizzeria1.jpg" alt="Pizzeria Bella Pizza intérieur" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;display:block;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"></div>
+    <div style="border-radius:12px;overflow:hidden;height:200px;"><img src="img/pizzeria2.jpg" alt="Cuisine Bella Pizza" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;display:block;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"></div>
+    <div style="border-radius:12px;overflow:hidden;height:200px;"><img src="img/pizzeria3.jpg" alt="Four à bois Bella Pizza" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;display:block;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"></div>
+    <div style="border-radius:12px;overflow:hidden;height:200px;"><img src="img/pizzeria4.jpg" alt="Terrasse Bella Pizza" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;display:block;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"></div>
+  </div>
+</section>
+
+<!-- AVIS CLIENTS -->
+<section style="background:rgba(0,0,0,0.3);">
+  <div class="section-title reveal"><h2>Ce que disent nos clients</h2><div class="line"></div></div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"La meilleure pizza de Toulouse sans hésitation ! La pâte est légère et croustillante, les ingrédients ultra frais. On y revient chaque semaine."</p>
+      <div class="review-author"><div class="review-avatar">S</div><div><div class="review-name">Sophie M.</div><div class="review-date">Il y a 2 jours</div></div></div>
+    </div>
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Accueil chaleureux et pizzas absolument délicieuses. La Savoyarde est un coup de cœur. Livraison rapide et encore bien chaude !"</p>
+      <div class="review-author"><div class="review-avatar">T</div><div><div class="review-name">Thomas R.</div><div class="review-date">Il y a 1 semaine</div></div></div>
+    </div>
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★☆</div>
+      <p class="review-text">"Très bonne adresse, la 4 fromages est parfaite. Rapport qualité-prix excellent. Je recommande vivement la Detroit !"</p>
+      <div class="review-author"><div class="review-avatar">L</div><div><div class="review-name">Laura D.</div><div class="review-date">Il y a 2 semaines</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HORAIRES & CONTACT -->
+<section>
+  <div class="section-title reveal"><h2>Horaires & Contact</h2><div class="line"></div></div>
+  <div class="hours-contact">
+    <div class="hours-table reveal">
+      <h3>⏰ Nos horaires</h3>
+      <div class="hours-row"><span class="day">Lundi</span><span class="time">11h30–14h30 / 18h–22h</span></div>
+      <div class="hours-row"><span class="day">Mardi</span><span class="time">11h30–14h30 / 18h–22h</span></div>
+      <div class="hours-row"><span class="day">Mercredi</span><span class="time">11h30–14h30 / 18h–22h</span></div>
+      <div class="hours-row"><span class="day">Jeudi</span><span class="time">11h30–14h30 / 18h–23h</span></div>
+      <div class="hours-row"><span class="day">Vendredi</span><span class="time">11h30–14h30 / 18h–23h30</span></div>
+      <div class="hours-row"><span class="day">Samedi</span><span class="time">12h–23h30</span></div>
+      <div class="hours-row closed"><span class="day">Dimanche</span><span class="time">Fermé</span></div>
+    </div>
+    <div class="contact-info reveal">
+      <h3>📍 Nous trouver</h3>
+      <div class="contact-item"><span class="contact-icon">📍</span><span>8 rue de la Pizza, Toulouse 31000</span></div>
+      <div class="contact-item"><span class="contact-icon">📞</span><a href="tel:+33749014675">+33 7 49 01 46 75</a></div>
+      <div class="contact-item"><span class="contact-icon">📧</span><a href="mailto:belllapizzzaa@gmail.com">belllapizzzaa@gmail.com</a></div>
+      <div class="map-container">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4244.522439240084!2d1.4453504865071547!3d43.60274051744989!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12aebdbd8e5792bf%3A0x61c066f084b1f8c7!2sLe%20Capitole!5e0!3m2!1sen!2sfr!4v1742580322369!5m2!1sen!2sfr" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Localisation Bella Pizza Toulouse"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-logo">Bella Pizza</div>
+      <p class="footer-desc">L'authenticité italienne au cœur de Toulouse depuis 1986.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn" aria-label="Facebook">f</a>
+        <a href="#" class="social-btn" aria-label="Instagram">📷</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <a href="index.html">Accueil</a>
+      <a href="menu.html">Menu</a>
+      <a href="reservation.html">Réservation</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Mon compte</h4>
+      <a href="history.html">Historique commandes</a>
+      <a href="mes-points.html">Mes points fidélité</a>
+      <a href="commande.html">Commander</a>
+    </div>
+    <div class="footer-col">
+      <h4>Légal</h4>
+      <a href="#">Mentions légales</a>
+      <a href="#">CGV</a>
+      <a href="#">Confidentialité</a>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; <span id="year"></span> Bella Pizza — Tous droits réservés</div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/search.js"></script>
+<script src="js/fidelite.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ── DARK MODE ────────────────────────────── */
+const darkToggle = document.getElementById('dark-toggle');
+function applyDark(on) {
+  document.body.classList.toggle('dark-mode', on);
+  localStorage.setItem('darkMode', on ? '1' : '0');
+}
+const savedDark = localStorage.getItem('darkMode');
+if (savedDark === '1' || (savedDark === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) applyDark(true);
+darkToggle?.addEventListener('click', () => applyDark(!document.body.classList.contains('dark-mode')));
+
+/* ── CURSEUR CUSTOM ───────────────────────── */
+const cursor = document.getElementById('custom-cursor');
+if (cursor) {
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+  document.querySelectorAll('a,button,.pizza-card').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+}
+
+/* ── BACK TO TOP ──────────────────────────── */
+const btt = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => btt?.classList.toggle('visible', window.scrollY > 300));
+btt?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ── RIPPLE SUR BOUTONS ───────────────────── */
+document.querySelectorAll('.btn-ripple').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    const wave = document.createElement('span');
+    wave.className = 'ripple-wave';
+    const rect = this.getBoundingClientRect();
+    wave.style.left = (e.clientX - rect.left) + 'px';
+    wave.style.top  = (e.clientY - rect.top) + 'px';
+    this.appendChild(wave);
+    setTimeout(() => wave.remove(), 700);
+  });
+});
+
+/* ── ANIMATION AJOUT PANIER ───────────────── */
+function addWithAnim(btn, id, name, price, img) {
+  cart.add({ id, name, price, img });
+  btn.classList.add('added');
+  btn.textContent = '✓ Ajouté !';
+  setTimeout(() => { btn.classList.remove('added'); btn.textContent = '+ Ajouter'; }, 1500);
+}
+
+/* ── POPUP BIENVENUE (1 seule fois) ───────── */
+if (!localStorage.getItem('bellaPizzaWelcome')) {
+  setTimeout(() => {
+    const overlay = document.createElement('div');
+    overlay.className = 'welcome-overlay';
+    overlay.innerHTML = `
+      <div class="welcome-box">
+        <div style="font-size:3rem;margin-bottom:8px;">🍕</div>
+        <h2>Bienvenue chez Bella Pizza !</h2>
+        <p>Pour votre première commande, profitez de <strong style="color:var(--gold)">-10%</strong> avec le code :</p>
+        <div class="promo-code-box" onclick="navigator.clipboard.writeText('BELLA10');this.querySelector('.hint').textContent='✅ Copié !'" title="Cliquer pour copier">
+          <div class="code">BELLA10</div>
+          <div class="hint">Cliquer pour copier</div>
+        </div>
+        <button class="btn btn-primary btn-ripple" onclick="this.closest('.welcome-overlay').remove();localStorage.setItem('bellaPizzaWelcome','1');" style="width:100%;">
+          Découvrir le menu
+        </button>
+        <button onclick="this.closest('.welcome-overlay').remove();localStorage.setItem('bellaPizzaWelcome','1');" style="background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;margin-top:12px;font-size:0.85rem;">Fermer</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); localStorage.setItem('bellaPizzaWelcome','1'); } });
+  }, 2500);
+}
+</script>
+</body>
+</html>

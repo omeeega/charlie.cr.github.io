@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historique – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/darkmode.css">
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+<button id="back-to-top" aria-label="Retour en haut">↑</button>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="img/logo.jpg" alt="Bella Pizza">
+    <span>Bella Pizza</span>
+  </a>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="reservation.html">Réservation</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="commande.html" class="btn-nav">🛒 Commander <span class="cart-count" id="cart-count">0</span></a></li>
+  </ul>
+</nav>
+
+<main style="padding-top:calc(var(--nav-h)+60px);padding-bottom:80px;padding-left:5%;padding-right:5%;max-width:900px;margin:0 auto;">
+
+  <div class="section-title">
+    <h2>Historique des Commandes</h2>
+    <div class="line"></div>
+  </div>
+
+  <div id="orders-list"></div>
+
+  <div id="empty-history" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:4rem;margin-bottom:16px;">🍕</div>
+    <h3 style="margin-bottom:12px;">Aucune commande pour l'instant</h3>
+    <p style="color:rgba(255,255,255,0.55);margin-bottom:24px;">Votre historique s'affichera ici après vos premières commandes.</p>
+    <a href="commande.html" class="btn btn-primary">Passer une commande</a>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-bottom">&copy; <span id="year"></span> Bella Pizza — Tous droits réservés</div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const btt = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => btt?.classList.toggle('visible', window.scrollY > 300));
+btt?.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+
+const savedDark = localStorage.getItem('darkMode');
+if (savedDark === '1') document.body.classList.add('dark-mode');
+
+function fmt(n) { return n.toFixed(2).replace('.',',') + ' €'; }
+
+function renderOrders() {
+  const orders = JSON.parse(localStorage.getItem('bellaPizzaOrders') || '[]');
+  const list = document.getElementById('orders-list');
+  const empty = document.getElementById('empty-history');
+
+  if (!orders.length) { empty.style.display = 'block'; return; }
+
+  list.innerHTML = orders.slice().reverse().map((o, i) => {
+    const date = new Date(o.date).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const total = o.items.reduce((s, it) => s + it.price * it.qty, 0);
+    const itemsHTML = o.items.map(it => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex;gap:12px;align-items:center;">
+          <img src="${it.img}" alt="${it.name}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;">
+          <div>
+            <div style="font-weight:500">${it.name}</div>
+            ${it.opts ? `<div style="font-size:0.8rem;color:rgba(255,255,255,0.5)">${it.opts}</div>` : ''}
+          </div>
+        </div>
+        <span style="color:var(--gold);font-weight:600">${it.qty}× ${fmt(it.price)}</span>
+      </div>
+    `).join('');
+
+    return `
+      <div class="reveal" style="background:var(--card-bg);border-radius:var(--radius);padding:24px;margin-bottom:20px;border:1px solid rgba(255,255,255,0.07);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+          <div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">${date}</div>
+            <div style="font-size:1rem;font-weight:600;color:var(--secondary);">Commande #${o.num}</div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.5);">${o.mode === 'livraison' ? '🛵 Livraison' : '🏃 À emporter'}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.3rem;font-weight:700;color:var(--gold);">${fmt(total)}</div>
+            <span style="background:rgba(76,175,80,0.2);color:#81c784;padding:3px 12px;border-radius:20px;font-size:0.8rem;">✓ Livrée</span>
+          </div>
+        </div>
+        ${itemsHTML}
+        <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+          <button class="btn btn-primary" style="font-size:0.9rem;padding:9px 20px;" onclick="reorder(${i})">🔄 Recommander</button>
+          <button class="btn btn-outline" style="font-size:0.9rem;padding:9px 20px;" onclick="deleteOrder(${i})">🗑 Supprimer</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  initReveal();
+}
+
+function reorder(revIdx) {
+  const orders = JSON.parse(localStorage.getItem('bellaPizzaOrders') || '[]');
+  const order = orders.slice().reverse()[revIdx];
+  order.items.forEach(it => cart.add({ id: it.id + '_' + Date.now(), name: it.name, price: it.price, img: it.img }));
+  toast(`${order.items.length} article(s) ajouté(s) au panier !`, 'success');
+  setTimeout(() => location.href = 'commande.html', 1200);
+}
+
+function deleteOrder(revIdx) {
+  const orders = JSON.parse(localStorage.getItem('bellaPizzaOrders') || '[]');
+  const realIdx = orders.length - 1 - revIdx;
+  orders.splice(realIdx, 1);
+  localStorage.setItem('bellaPizzaOrders', JSON.stringify(orders));
+  renderOrders();
+  toast('Commande supprimée.', 'info');
+}
+
+function initReveal() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => obs.observe(el));
+}
+
+renderOrders();
+</script>
+</body>
+</html>

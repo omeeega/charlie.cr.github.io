@@ -1,0 +1,61 @@
+/* ── DARK MODE OVERRIDES ─────────────────────────────────── */
+/* Activé par body.dark-mode */
+
+body.dark-mode {
+  --card-bg: rgba(255,255,255,0.04);
+  --text: #e8e8e8;
+}
+
+body.dark-mode::before {
+  background: rgba(0,0,0,0.65);
+}
+
+body.dark-mode .navbar {
+  background: linear-gradient(to right, rgba(30,20,15,0.97), rgba(50,30,15,0.97));
+}
+
+body.dark-mode .pizza-card {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.06);
+}
+
+body.dark-mode .modal {
+  background: #121212;
+}
+
+body.dark-mode .hours-table,
+body.dark-mode .contact-info,
+body.dark-mode .reservation-card,
+body.dark-mode .cart-summary,
+body.dark-mode .review-card {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.06);
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group textarea,
+body.dark-mode .form-group select {
+  background: rgba(0,0,0,0.6);
+  border-color: rgba(255,255,255,0.1);
+}
+
+body.dark-mode footer {
+  background: rgba(0,0,0,0.95);
+}
+
+body.dark-mode .search-overlay input {
+  border-bottom-color: var(--secondary);
+}
+
+/* Transition globale douce */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
+/* Sauf les animations qui ont déjà leurs propres transitions */
+.pizza-card, .btn, .btn-add, .hamburger span,
+.cart-count, .toast, .modal, .modal-overlay {
+  transition: all 0.3s ease;
+}

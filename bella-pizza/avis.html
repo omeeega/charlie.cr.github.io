@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avis clients – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .avis-grid { display:grid; grid-template-columns:340px 1fr; gap:32px; max-width:1100px; margin:0 auto; }
+    @media(max-width:800px){ .avis-grid{ grid-template-columns:1fr; } }
+
+    /* Stats panel */
+    .stats-panel { background:var(--card-bg); border-radius:var(--radius); padding:28px; border:1px solid rgba(255,255,255,0.08); }
+    .big-score { font-size:5rem; font-weight:900; color:var(--gold); line-height:1; }
+    .star-row { font-size:1.6rem; margin:6px 0; }
+    .total-avis { color:rgba(255,255,255,0.45); font-size:0.9rem; }
+    .dist-row { display:flex; align-items:center; gap:10px; margin:5px 0; }
+    .dist-label { font-size:0.85rem; color:rgba(255,255,255,0.5); width:30px; text-align:right; }
+    .dist-bar-wrap { flex:1; height:10px; background:rgba(255,255,255,0.08); border-radius:5px; overflow:hidden; }
+    .dist-bar { height:100%; background:var(--gold); border-radius:5px; transition:width 1s; }
+    .dist-count { font-size:0.8rem; color:rgba(255,255,255,0.35); width:24px; }
+
+    /* Filter + sort */
+    .filter-bar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+    .filter-btn { padding:7px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); cursor:pointer; font-size:0.85rem; transition:all 0.2s; }
+    .filter-btn.active, .filter-btn:hover { background:rgba(255,126,95,0.2); border-color:var(--primary); color:#fff; }
+
+    /* Avis cards */
+    .avis-card { background:var(--card-bg); border-radius:var(--radius); padding:22px 24px; border:1px solid rgba(255,255,255,0.07); margin-bottom:16px; position:relative; }
+    .avis-card.pending { border-color:rgba(248,180,0,0.3); }
+    .avis-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+    .avis-author { font-weight:600; font-size:0.95rem; }
+    .avis-date { font-size:0.78rem; color:rgba(255,255,255,0.35); }
+    .avis-stars { font-size:1.1rem; margin-bottom:8px; }
+    .avis-text { font-size:0.9rem; color:rgba(255,255,255,0.7); line-height:1.6; }
+    .avis-badge { position:absolute; top:14px; right:14px; font-size:0.7rem; padding:3px 10px; border-radius:20px; }
+    .badge-verified { background:rgba(76,175,80,0.2); color:#81c784; border:1px solid rgba(76,175,80,0.3); }
+    .badge-pending { background:rgba(248,180,0,0.15); color:var(--gold); border:1px solid rgba(248,180,0,0.3); }
+    .like-btn { background:none; border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:5px 14px; cursor:pointer; font-size:0.82rem; color:rgba(255,255,255,0.5); transition:all 0.2s; margin-top:12px; }
+    .like-btn:hover, .like-btn.liked { background:rgba(255,126,95,0.15); border-color:var(--primary); color:var(--primary); }
+
+    /* Write review */
+    .write-panel { background:var(--card-bg); border-radius:var(--radius); padding:24px; border:1px solid rgba(255,255,255,0.08); margin-top:20px; }
+    .star-picker { display:flex; gap:6px; font-size:2rem; cursor:pointer; margin:10px 0; }
+    .star-picker span { transition:transform 0.15s; }
+    .star-picker span:hover, .star-picker span.selected { transform:scale(1.2); }
+
+    .no-avis { text-align:center; padding:40px; color:rgba(255,255,255,0.3); }
+  </style>
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><img src="img/logo.jpg" alt="Bella Pizza"><span>Bella Pizza</span></a>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li><li><a href="menu.html">Menu</a></li>
+    <li><a href="commande.html" class="btn-nav">🛒 Commander <span class="cart-count" id="cart-count">0</span></a></li>
+  </ul>
+</nav>
+
+<main style="padding-top:calc(var(--nav-h)+60px);padding-bottom:80px;padding-left:5%;padding-right:5%;">
+  <div class="section-title"><h2>Avis clients</h2><div class="line"></div></div>
+
+  <div class="avis-grid">
+    <!-- Stats -->
+    <div>
+      <div class="stats-panel">
+        <div class="big-score" id="avg-score">—</div>
+        <div class="star-row" id="avg-stars">☆☆☆☆☆</div>
+        <div class="total-avis" id="total-avis">0 avis</div>
+        <div style="margin-top:20px" id="dist-bars"></div>
+      </div>
+
+      <!-- Write review -->
+      <div class="write-panel" style="margin-top:20px">
+        <h4 style="margin-bottom:12px">Laisser un avis</h4>
+        <input type="text" id="rev-name" placeholder="Votre prénom *" class="form-control" style="margin-bottom:10px">
+        <div class="star-picker" id="star-picker">
+          <span data-v="1">☆</span><span data-v="2">☆</span><span data-v="3">☆</span><span data-v="4">☆</span><span data-v="5">☆</span>
+        </div>
+        <textarea id="rev-text" placeholder="Votre commentaire…" class="form-control" rows="3" style="resize:vertical;margin-bottom:12px"></textarea>
+        <button class="btn btn-primary" style="width:100%" id="submit-rev">Publier mon avis</button>
+      </div>
+    </div>
+
+    <!-- Avis list -->
+    <div>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">Tous</button>
+        <button class="filter-btn" data-filter="5">⭐ 5</button>
+        <button class="filter-btn" data-filter="4">⭐ 4</button>
+        <button class="filter-btn" data-filter="3">⭐ 3</button>
+        <button class="filter-btn" data-filter="low">⭐ 1-2</button>
+      </div>
+      <div id="avis-list"></div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="footer-bottom">&copy; <span id="year"></span> Bella Pizza</div></footer>
+
+<script src="js/app.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const DEMO_REVIEWS = [
+  { id:1, author:'Marie L.', rating:5, text:'Exceptionnelle ! La Savoyarde est un pur délice, la pâte est croustillante à souhait. Le livreur était ponctuel. Je recommande vivement !', date:'2025-12-10', verified:true, likes:14 },
+  { id:2, author:'Thomas M.', rating:5, text:'La meilleure pizza de Toulouse sans hésitation. Les ingrédients sont frais, la sauce est parfaite. Continuez comme ça !', date:'2025-12-05', verified:true, likes:9 },
+  { id:3, author:'Sophie D.', rating:4, text:'Très bonne pizza, livraison rapide. Légèrement salée pour moi mais la qualité est indéniable. Reviendrai commander !', date:'2025-11-28', verified:true, likes:3 },
+  { id:4, author:'Lucas B.', rating:5, text:'Le four à bois fait toute la différence. Pâte sublime, garnitures généreuses. La Chèvre-Miel est ma préférée.', date:'2025-11-20', verified:true, likes:7 },
+  { id:5, author:'Emma R.', rating:3, text:'Bonne pizza mais la livraison a pris 45 minutes au lieu de 30. Goût très bien cependant.', date:'2025-11-15', verified:true, likes:1 },
+  { id:6, author:'Antoine P.', rating:5, text:'Commande vocale via le site, c\'est bluffant ! Et la pizza était délicieuse. Service client au top.', date:'2025-11-10', verified:false, likes:5 },
+];
+
+const STORAGE_KEY = 'bellaPizzaReviews';
+
+function getReviews() {
+  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  return [...DEMO_REVIEWS, ...stored];
+}
+
+function stars(n, size='1rem') {
+  return '⭐'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n));
+}
+
+function renderStats() {
+  const revs = getReviews();
+  if (revs.length === 0) return;
+  const avg = revs.reduce((s,r)=>s+r.rating,0) / revs.length;
+  document.getElementById('avg-score').textContent = avg.toFixed(1);
+  document.getElementById('avg-stars').textContent = stars(avg);
+  document.getElementById('total-avis').textContent = revs.length + ' avis';
+
+  const counts = [0,0,0,0,0];
+  revs.forEach(r => { if(r.rating>=1&&r.rating<=5) counts[r.rating-1]++; });
+  const max = Math.max(...counts, 1);
+  const html = [5,4,3,2,1].map(v => `
+    <div class="dist-row">
+      <div class="dist-label">${v}⭐</div>
+      <div class="dist-bar-wrap"><div class="dist-bar" style="width:${(counts[v-1]/max)*100}%"></div></div>
+      <div class="dist-count">${counts[v-1]}</div>
+    </div>
+  `).join('');
+  document.getElementById('dist-bars').innerHTML = html;
+}
+
+let currentFilter = 'all';
+let likedSet = new Set(JSON.parse(localStorage.getItem('bellaPizzaLiked') || '[]'));
+
+function renderList() {
+  const revs = getReviews();
+  let filtered = revs;
+  if (currentFilter === '5') filtered = revs.filter(r=>r.rating===5);
+  else if (currentFilter === '4') filtered = revs.filter(r=>r.rating===4);
+  else if (currentFilter === '3') filtered = revs.filter(r=>r.rating===3);
+  else if (currentFilter === 'low') filtered = revs.filter(r=>r.rating<=2);
+
+  const list = document.getElementById('avis-list');
+  if (filtered.length === 0) { list.innerHTML='<div class="no-avis">Aucun avis pour ce filtre.</div>'; return; }
+
+  list.innerHTML = filtered.sort((a,b)=>new Date(b.date)-new Date(a.date)).map((r,i) => `
+    <div class="avis-card ${r.pending ? 'pending' : ''}" data-idx="${r.id}">
+      <div class="avis-header">
+        <div>
+          <div class="avis-author">${r.author}</div>
+          <div class="avis-date">${new Date(r.date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}</div>
+        </div>
+      </div>
+      <div class="avis-badge ${r.verified ? 'badge-verified' : 'badge-pending'}">${r.verified ? '✓ Vérifié' : '⏳ En attente'}</div>
+      <div class="avis-stars">${stars(r.rating)}</div>
+      <div class="avis-text">${r.text}</div>
+      <button class="like-btn ${likedSet.has(r.id) ? 'liked' : ''}" data-id="${r.id}">
+        👍 Utile (${(r.likes||0) + (likedSet.has(r.id)?1:0)})
+      </button>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.like-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id);
+      if (likedSet.has(id)) likedSet.delete(id);
+      else likedSet.add(id);
+      localStorage.setItem('bellaPizzaLiked', JSON.stringify([...likedSet]));
+      renderList();
+    });
+  });
+}
+
+// Filters
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderList();
+  });
+});
+
+// Star picker
+let selectedRating = 0;
+const picker = document.getElementById('star-picker');
+picker.querySelectorAll('span').forEach(s => {
+  s.addEventListener('mouseover', () => {
+    const v = parseInt(s.dataset.v);
+    picker.querySelectorAll('span').forEach((sp,i) => sp.textContent = i<v ? '⭐' : '☆');
+  });
+  s.addEventListener('mouseleave', () => {
+    picker.querySelectorAll('span').forEach((sp,i) => sp.textContent = i<selectedRating ? '⭐' : '☆');
+  });
+  s.addEventListener('click', () => {
+    selectedRating = parseInt(s.dataset.v);
+    picker.querySelectorAll('span').forEach((sp,i) => sp.classList.toggle('selected', i<selectedRating));
+  });
+});
+
+// Submit
+document.getElementById('submit-rev').addEventListener('click', () => {
+  const name = document.getElementById('rev-name').value.trim();
+  const text = document.getElementById('rev-text').value.trim();
+  if (!name) { toast('Veuillez entrer votre prénom', 'error'); return; }
+  if (selectedRating === 0) { toast('Veuillez sélectionner une note', 'error'); return; }
+  if (text.length < 10) { toast('Commentaire trop court (min 10 caractères)', 'error'); return; }
+
+  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  stored.push({ id: Date.now(), author: name, rating: selectedRating, text, date: new Date().toISOString().slice(0,10), verified: false, pending: true, likes: 0 });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+
+  document.getElementById('rev-name').value = '';
+  document.getElementById('rev-text').value = '';
+  selectedRating = 0;
+  picker.querySelectorAll('span').forEach(s => { s.textContent='☆'; s.classList.remove('selected'); });
+
+  toast('Merci ! Votre avis est en attente de validation.', 'success');
+  renderStats();
+  renderList();
+});
+
+renderStats();
+renderList();
+</script>
+</body>
+</html>

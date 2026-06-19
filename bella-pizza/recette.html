@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recettes de Pizza</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="img/logo.ico" href="img/logo.ico">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Vivaldi', serif;
+        }
+        header {
+            background: linear-gradient(45deg, #ff6b6b, #ffa502);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .gallery img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .gallery img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+        }
+        .container {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            text-shadow: 6px 6px 5px rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .image {
+            width: 33%;
+            height: auto;
+            transition: transform 2s;
+          }
+          
+          .image.animate {
+            transform: rotate(360deg);
+          }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="img/logo.jpg" class="logo" alt="logo">
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="hero">
+                    <h1>Bella Pizza</h1>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <nav class="menu">
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="recette.html">Recettes</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="commande.html">Commandez</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="row gallery">
+
+            <div class="col-md-4 mb-4 ">
+
+                <ol class="content ">
+                    <li class="list-group-item">champignons</li>
+
+                <a href="champignons.html"><img src="img/pizza-champignons.jpg" class="img-fluid zoom-effect" alt="Pizza Champignons"></a>
+                
+            </div>
+            <div class="col-md-4 mb-4 ">
+
+                <ol class="content ">
+                    <li class="list-group-item">chèvre-miel</li>
+
+                <a href="chevre-miel.html"><img src="img/pizza-chevre-miel.jpg" class="img-fluid zoom-effect" alt="Pizza Chèvre Miel"></a>
+            </div>
+            <div class="col-md-4 mb-4 ">
+
+                <ol class="content">
+                    <li class="list-group-item">Orientale</li>
+
+                <a href="merguez.html"><img src="img/pizza-merguez.jpg" class="img-fluid zoom-effect" alt="Pizza Merguez"></a>
+            </div>
+            <div class="col-md-4 mb-4 ">
+
+                <ol class="content ">
+                    <li class="list-group-item">La nicoise</li>
+
+                <a href="nicoise.html"><img src="img/pizza-nicoise.jpg" class="img-fluid zoom-effect" alt="Pizza Niçoise"></a>
+            </div>
+            <div class="col-md-4 mb-4 ">
+
+                <ol class="content">
+                    <li class="list-group-item">Une Normande</li>
+
+                <a href="normande.html"><img src="img/pizza-normande.jpg" class="img-fluid zoom-effect" alt="Pizza Normande"></a>
+            </div>
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">Pepperoni</li>
+
+                <a href="pepperoni.html"><img src="img/pizza-pepperoni.jpg" class="img-fluid zoom-effect" alt="Pizza Pepperoni"></a>
+            </div>
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">Une reine</li>
+
+                <a href="reine.html"><img src="img/pizza-reine.jpg" class="img-fluid zoom-effect" alt="Pizza Reine"></a>
+            </div>
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">Savoyarde</li>
+
+                <a href="savoyarde.html"><img src="img/pizza-savoyarde.jpg" class="img-fluid zoom-effect" alt="Pizza Savoyarde"></a>
+            </div>
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">La vegetarienne</li>
+
+                <a href="vegetarienne.html"><img src="img/pizza-vegetarienne.jpg" class="img-fluid zoom-effect" alt="Pizza Végétarienne"></a>
+            </div>
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">4 fromages</li>
+
+                <a href="4fromages.html"><img src="img/pizza-4fromages.jpg" class="img-fluid zoom-effect" alt="Pizza 4 fromages"></a>
+            </div>
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">californienne</li>
+
+                <a href="californienne.html"><img src="img/pizza-californienne.jpg" class="img-fluid zoom-effect" alt="Pizza californienne"></a>
+            </div>
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">Une margherita</li>
+
+                <a href="margherita.html"><img src="img/pizza-margherita.jpg" class="img-fluid zoom-effect" alt="Pizza margherita"></a>
+            </div>
+
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">La grecque</li>
+
+                <a href="grecque.html"><img src="img/pizza-grecque.jpg" class="img-fluid zoom-effect" alt="Pizza margherita"></a>
+            </div>
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">La Detroit</li>
+
+
+                <a href="detroit.html"><img src="img/pizza-detroit.jpg" class="img-fluid zoom-effect" alt="Pizza margherita"></a>
+            </div>
+            <div class="col-md-4 mb-4">
+
+                <ol class="content">
+                    <li class="list-group-item">Calzone</li>
+
+                <a href="calzone.html"><img src="img/pizza-calzone.jpg" class="img-fluid zoom-effect" alt="Pizza margherita"></a>
+            </div>
+        </div>
+    </div>
+
+
+    <footer>
+        <p>&copy; 2025 Pizza Express - Tous droits réservés</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+        
+   
+</body>
+</html>

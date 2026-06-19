@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créateur de pizza – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .builder-grid { display:grid; grid-template-columns:1fr 320px; gap:32px; max-width:1100px; margin:0 auto; }
+    @media(max-width:800px){ .builder-grid{ grid-template-columns:1fr; } }
+
+    #pizza-canvas { border-radius:50%; box-shadow:0 0 40px rgba(255,126,95,0.3); cursor:crosshair; display:block; margin:0 auto; }
+
+    .ing-panel { background:var(--card-bg); border-radius:var(--radius); padding:24px; border:1px solid rgba(255,255,255,0.08); }
+    .ing-section-title { font-size:0.78rem; text-transform:uppercase; letter-spacing:2px; color:rgba(255,255,255,0.4); margin:16px 0 10px; }
+    .ing-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .ing-btn { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:10px 4px; font-size:1.4rem; cursor:pointer; transition:all 0.2s; text-align:center; position:relative; }
+    .ing-btn:hover { background:rgba(255,126,95,0.2); border-color:var(--primary); transform:scale(1.08); }
+    .ing-btn.selected { background:rgba(255,126,95,0.25); border-color:var(--primary); box-shadow:0 0 10px rgba(255,126,95,0.3); }
+    .ing-btn .ing-name { font-size:0.6rem; color:rgba(255,255,255,0.5); display:block; margin-top:2px; }
+    .ing-btn .ing-price { font-size:0.58rem; color:var(--gold); }
+
+    .pizza-name-row { display:flex; gap:10px; margin-bottom:16px; }
+    .pizza-name-row input { flex:1; }
+
+    .base-btns { display:flex; gap:8px; margin-bottom:8px; }
+    .base-btn { flex:1; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); cursor:pointer; font-size:0.85rem; transition:all 0.2s; }
+    .base-btn.active { background:rgba(255,126,95,0.2); border-color:var(--primary); color:#fff; }
+
+    .size-btns { display:flex; gap:8px; margin-bottom:16px; }
+    .size-btn { flex:1; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); cursor:pointer; transition:all 0.2s; text-align:center; }
+    .size-btn.active { background:rgba(255,126,95,0.2); border-color:var(--primary); }
+    .size-btn .sz-label { font-size:0.85rem; }
+    .size-btn .sz-cm { font-size:0.7rem; color:rgba(255,255,255,0.4); }
+
+    .total-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid rgba(255,255,255,0.08); margin-top:12px; }
+    .total-price { font-size:1.5rem; font-weight:700; color:var(--gold); }
+
+    .clear-btn { background:none; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.5); border-radius:8px; padding:6px 14px; cursor:pointer; font-size:0.82rem; transition:all 0.2s; }
+    .clear-btn:hover { border-color:var(--primary); color:var(--primary); }
+
+    .saved-list { margin-top:20px; }
+    .saved-item { display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border-radius:8px; padding:10px 14px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.06); }
+    .saved-item-name { font-size:0.9rem; }
+    .saved-item-actions { display:flex; gap:8px; }
+    .saved-item-actions button { background:none; border:none; cursor:pointer; font-size:1rem; padding:2px 6px; border-radius:6px; transition:background 0.2s; }
+    .saved-item-actions button:hover { background:rgba(255,126,95,0.2); }
+  </style>
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo"><img src="img/logo.jpg" alt="Bella Pizza"><span>Bella Pizza</span></a>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li><li><a href="menu.html">Menu</a></li>
+    <li><a href="commande.html" class="btn-nav">🛒 Commander <span class="cart-count" id="cart-count">0</span></a></li>
+  </ul>
+</nav>
+
+<main style="padding-top:calc(var(--nav-h)+60px);padding-bottom:80px;padding-left:5%;padding-right:5%;">
+  <div class="section-title"><h2>🍕 Créateur de pizza</h2><div class="line"></div>
+    <p style="color:rgba(255,255,255,0.55);margin-top:8px">Composez votre pizza idéale et ajoutez-la au panier.</p>
+  </div>
+
+  <div class="builder-grid">
+    <!-- Canvas -->
+    <div>
+      <div class="pizza-name-row">
+        <input type="text" id="pizza-name" placeholder="Nom de votre création…" class="form-control">
+      </div>
+      <canvas id="pizza-canvas" width="400" height="400"></canvas>
+      <p style="text-align:center;color:rgba(255,255,255,0.3);font-size:0.8rem;margin-top:10px">Cliquez sur la pizza pour placer des ingrédients</p>
+    </div>
+
+    <!-- Panel droit -->
+    <div class="ing-panel">
+      <!-- Taille -->
+      <div class="ing-section-title">Taille</div>
+      <div class="size-btns">
+        <div class="size-btn active" data-size="s" data-mult="1"><div class="sz-label">S</div><div class="sz-cm">28 cm</div></div>
+        <div class="size-btn" data-size="m" data-mult="1.3"><div class="sz-label">M</div><div class="sz-cm">33 cm</div></div>
+        <div class="size-btn" data-size="l" data-mult="1.6"><div class="sz-label">L</div><div class="sz-cm">40 cm</div></div>
+      </div>
+
+      <!-- Base -->
+      <div class="ing-section-title">Base</div>
+      <div class="base-btns">
+        <button class="base-btn active" data-base="tomate">🍅 Tomate</button>
+        <button class="base-btn" data-base="creme">🥛 Crème</button>
+        <button class="base-btn" data-base="pesto">🌿 Pesto</button>
+      </div>
+
+      <!-- Fromages -->
+      <div class="ing-section-title">Fromages</div>
+      <div class="ing-grid" id="cheese-grid"></div>
+
+      <!-- Garnitures -->
+      <div class="ing-section-title">Garnitures</div>
+      <div class="ing-grid" id="topping-grid"></div>
+
+      <!-- Total + actions -->
+      <div class="total-row">
+        <div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.4)">Prix estimé</div>
+          <div class="total-price" id="builder-total">8,00 €</div>
+        </div>
+        <button class="clear-btn" id="clear-btn">🗑 Vider</button>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;margin-top:4px" id="add-cart-btn">Ajouter au panier</button>
+      <button class="btn btn-outline" style="width:100%;margin-top:10px" id="save-btn">💾 Sauvegarder</button>
+
+      <!-- Mes créations sauvegardées -->
+      <div class="ing-section-title" style="margin-top:20px">Mes créations</div>
+      <div class="saved-list" id="saved-list"><p style="color:rgba(255,255,255,0.3);font-size:0.85rem">Aucune création sauvegardée.</p></div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="footer-bottom">&copy; <span id="year"></span> Bella Pizza</div></footer>
+
+<script src="js/app.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const CHEESES = [
+  { id:'mozza',  emoji:'🧀', name:'Mozzarella', price:0 },
+  { id:'cheddar',emoji:'🟡', name:'Cheddar',    price:0.5 },
+  { id:'chevre', emoji:'⚪', name:'Chèvre',     price:0.8 },
+  { id:'gorgon', emoji:'🔵', name:'Gorgonzola', price:0.8 },
+];
+const TOPPINGS = [
+  { id:'tomate', emoji:'🍅', name:'Tomate',      price:0 },
+  { id:'jambon', emoji:'🥩', name:'Jambon',      price:1 },
+  { id:'champi', emoji:'🍄', name:'Champignons', price:0.6 },
+  { id:'poivron',emoji:'🫑', name:'Poivron',     price:0.6 },
+  { id:'olive',  emoji:'🫒', name:'Olives',      price:0.5 },
+  { id:'oignon', emoji:'🧅', name:'Oignon',      price:0.4 },
+  { id:'pepperoni',emoji:'🌶', name:'Pepperoni', price:1 },
+  { id:'bacon',  emoji:'🥓', name:'Bacon',       price:1 },
+  { id:'ananas', emoji:'🍍', name:'Ananas',      price:0.5 },
+  { id:'roquette',emoji:'🌿', name:'Roquette',   price:0.4 },
+  { id:'oeuf',   emoji:'🥚', name:'Œuf',         price:0.5 },
+  { id:'anchois',emoji:'🐟', name:'Anchois',     price:0.8 },
+];
+
+const BASE_PRICE = 8;
+const SIZE_MULT  = { s:1, m:1.3, l:1.6 };
+let selectedCheeses = new Set(['mozza']);
+let selectedToppings = new Set();
+let selectedSize = 's';
+let selectedBase = 'tomate';
+let placedItems = [];
+
+// Build grids
+function buildGrid(containerId, items, selectedSet) {
+  const g = document.getElementById(containerId);
+  g.innerHTML = '';
+  items.forEach(it => {
+    const btn = document.createElement('button');
+    btn.className = 'ing-btn' + (selectedSet.has(it.id) ? ' selected' : '');
+    btn.dataset.id = it.id;
+    btn.innerHTML = `<span style="font-size:1.5rem">${it.emoji}</span><span class="ing-name">${it.name}</span><span class="ing-price">${it.price > 0 ? '+'+it.price.toFixed(2)+'€' : 'inclus'}</span>`;
+    btn.addEventListener('click', () => {
+      if (selectedSet.has(it.id)) selectedSet.delete(it.id);
+      else selectedSet.add(it.id);
+      btn.classList.toggle('selected');
+      updateTotal();
+      drawPizza();
+    });
+    g.appendChild(btn);
+  });
+}
+
+buildGrid('cheese-grid', CHEESES, selectedCheeses);
+buildGrid('topping-grid', TOPPINGS, selectedToppings);
+
+// Size
+document.querySelectorAll('.size-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedSize = btn.dataset.size;
+    updateTotal(); drawPizza();
+  });
+});
+
+// Base
+document.querySelectorAll('.base-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.base-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedBase = btn.dataset.base;
+    drawPizza();
+  });
+});
+
+// Total
+function computeTotal() {
+  let extra = 0;
+  selectedCheeses.forEach(id => { const c = CHEESES.find(x=>x.id===id); if(c) extra += c.price; });
+  selectedToppings.forEach(id => { const t = TOPPINGS.find(x=>x.id===id); if(t) extra += t.price; });
+  return (BASE_PRICE + extra) * SIZE_MULT[selectedSize];
+}
+function updateTotal() {
+  document.getElementById('builder-total').textContent = computeTotal().toFixed(2).replace('.',',') + ' €';
+}
+updateTotal();
+
+// Canvas drawing
+const canvas = document.getElementById('pizza-canvas');
+const ctx = canvas.getContext('2d');
+const CX = 200, CY = 200, CR = 185;
+
+const BASE_COLORS = { tomate:'#c0392b', creme:'#f5e6c8', pesto:'#4a7c3f' };
+
+function drawPizza() {
+  ctx.clearRect(0,0,400,400);
+
+  // Shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 30;
+
+  // Crust
+  ctx.beginPath(); ctx.arc(CX,CY,CR,0,Math.PI*2);
+  ctx.fillStyle = '#d4863a'; ctx.fill();
+
+  // Dough
+  ctx.beginPath(); ctx.arc(CX,CY,CR-14,0,Math.PI*2);
+  ctx.fillStyle = '#f0c060'; ctx.fill();
+
+  // Base sauce
+  ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(CX,CY,CR-22,0,Math.PI*2);
+  ctx.fillStyle = BASE_COLORS[selectedBase] || '#c0392b'; ctx.fill();
+
+  // Fromages (overlay blanc)
+  if (selectedCheeses.size > 0) {
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath(); ctx.arc(CX,CY,CR-26,0,Math.PI*2);
+    ctx.fillStyle = '#fdf6e3'; ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  // Topping emoji scattered
+  ctx.font = '22px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const allToppings = [
+    ...[...selectedCheeses].map(id => CHEESES.find(x=>x.id===id)),
+    ...[...selectedToppings].map(id => TOPPINGS.find(x=>x.id===id)),
+  ].filter(Boolean);
+
+  if (allToppings.length > 0) {
+    const seed = allToppings.map(t=>t.id).join('');
+    const pts = getPseudoRandomPoints(seed, allToppings.length * 6, CR - 35);
+    pts.forEach((pt, i) => {
+      const t = allToppings[i % allToppings.length];
+      ctx.fillText(t.emoji, CX + pt.x, CY + pt.y);
+    });
+  }
+
+  // Placed items (click-placed)
+  placedItems.forEach(it => {
+    ctx.font = '26px serif';
+    ctx.fillText(it.emoji, it.x, it.y);
+  });
+
+  // Size ring indicator
+  ctx.strokeStyle = 'rgba(255,126,95,0.4)';
+  ctx.lineWidth = selectedSize === 's' ? 2 : selectedSize === 'm' ? 4 : 6;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath(); ctx.arc(CX,CY,CR+4,0,Math.PI*2); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function getPseudoRandomPoints(seed, n, maxR) {
+  const pts = [];
+  let h = 0;
+  for (let c of seed) h = (h*31 + c.charCodeAt(0)) & 0xffffffff;
+  for (let i = 0; i < n; i++) {
+    h = (h * 1664525 + 1013904223) & 0xffffffff;
+    const angle = ((h >>> 0) / 0xffffffff) * Math.PI * 2;
+    h = (h * 1664525 + 1013904223) & 0xffffffff;
+    const r = Math.sqrt(((h >>> 0) / 0xffffffff)) * maxR * 0.85;
+    pts.push({ x: Math.cos(angle)*r, y: Math.sin(angle)*r });
+  }
+  return pts;
+}
+
+// Click to place topping
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+  const dist = Math.hypot(x - CX, y - CY);
+  if (dist > CR - 20) return;
+  const tops = [...selectedToppings];
+  if (tops.length === 0) { toast('Sélectionnez d\'abord un ingrédient !', 'info'); return; }
+  const id = tops[Math.floor(Math.random()*tops.length)];
+  const item = TOPPINGS.find(t=>t.id===id);
+  if (item) { placedItems.push({emoji:item.emoji, x, y}); drawPizza(); }
+});
+
+drawPizza();
+
+// Clear
+document.getElementById('clear-btn').addEventListener('click', () => {
+  selectedCheeses = new Set(['mozza']);
+  selectedToppings = new Set();
+  placedItems = [];
+  buildGrid('cheese-grid', CHEESES, selectedCheeses);
+  buildGrid('topping-grid', TOPPINGS, selectedToppings);
+  updateTotal(); drawPizza();
+  toast('Pizza réinitialisée', 'info');
+});
+
+// Add to cart
+document.getElementById('add-cart-btn').addEventListener('click', () => {
+  const name = document.getElementById('pizza-name').value.trim() || 'Ma Pizza Perso';
+  const price = computeTotal();
+  if (typeof cart !== 'undefined') {
+    cart.add({ id:'custom_'+Date.now(), name, price, emoji:'🍕' });
+    toast(`"${name}" ajoutée au panier !`, 'success');
+  }
+});
+
+// Save creation
+function loadSaved() {
+  const saved = JSON.parse(localStorage.getItem('bellaPizzaCreations') || '[]');
+  const list = document.getElementById('saved-list');
+  if (saved.length === 0) { list.innerHTML='<p style="color:rgba(255,255,255,0.3);font-size:0.85rem">Aucune création sauvegardée.</p>'; return; }
+  list.innerHTML = saved.map((s,i) => `
+    <div class="saved-item">
+      <div>
+        <div class="saved-item-name">🍕 ${s.name}</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.4)">${s.price} €</div>
+      </div>
+      <div class="saved-item-actions">
+        <button title="Charger" onclick="loadCreation(${i})">📂</button>
+        <button title="Supprimer" onclick="deleteCreation(${i})">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('save-btn').addEventListener('click', () => {
+  const name = document.getElementById('pizza-name').value.trim() || 'Ma Pizza ' + Date.now();
+  const price = computeTotal().toFixed(2).replace('.',',');
+  const saved = JSON.parse(localStorage.getItem('bellaPizzaCreations') || '[]');
+  saved.push({ name, price, cheeses:[...selectedCheeses], toppings:[...selectedToppings], size:selectedSize, base:selectedBase });
+  localStorage.setItem('bellaPizzaCreations', JSON.stringify(saved));
+  toast(`"${name}" sauvegardée !`, 'success');
+  loadSaved();
+});
+
+window.loadCreation = function(i) {
+  const saved = JSON.parse(localStorage.getItem('bellaPizzaCreations') || '[]');
+  const s = saved[i]; if (!s) return;
+  document.getElementById('pizza-name').value = s.name;
+  selectedCheeses = new Set(s.cheeses);
+  selectedToppings = new Set(s.toppings);
+  selectedSize = s.size;
+  selectedBase = s.base;
+  placedItems = [];
+  buildGrid('cheese-grid', CHEESES, selectedCheeses);
+  buildGrid('topping-grid', TOPPINGS, selectedToppings);
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.toggle('active', b.dataset.size === s.size));
+  document.querySelectorAll('.base-btn').forEach(b => b.classList.toggle('active', b.dataset.base === s.base));
+  updateTotal(); drawPizza();
+  toast('Création chargée !', 'success');
+};
+
+window.deleteCreation = function(i) {
+  const saved = JSON.parse(localStorage.getItem('bellaPizzaCreations') || '[]');
+  saved.splice(i, 1);
+  localStorage.setItem('bellaPizzaCreations', JSON.stringify(saved));
+  loadSaved();
+  toast('Création supprimée', 'info');
+};
+
+loadSaved();
+</script>
+</body>
+</html>

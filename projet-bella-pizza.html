@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bella Pizza — Charlie Viguié</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .project-page {
+      position: relative;
+      z-index: 1;
+      padding: 96px 0 4rem;
+      min-height: 100vh;
+    }
+    .project-header {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem 3rem;
+    }
+    .project-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .badge-online {
+      background: rgba(0,255,136,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0,255,136,0.3);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+    }
+    .project-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 0.6rem;
+    }
+    .project-desc {
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.7;
+      max-width: 640px;
+      margin-bottom: 1.4rem;
+    }
+    .project-tags { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .features-grid {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem 3rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .feature-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      font-size: 0.85rem;
+    }
+    .feature-item .fi-icon { font-size: 1.4rem; margin-bottom: 0.5rem; display: block; }
+    .feature-item strong { display: block; color: var(--text); margin-bottom: 0.3rem; font-size: 0.88rem; }
+    .feature-item p { color: var(--muted); font-size: 0.8rem; line-height: 1.5; margin: 0; }
+    .cta-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem 3rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .preview-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .preview-frame {
+      position: relative;
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0,255,136,0.07), 0 30px 60px rgba(0,0,0,0.6);
+    }
+    .preview-frame::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--cyan));
+    }
+    iframe {
+      display: block;
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-family: var(--mono);
+      transition: color 0.2s;
+      margin-bottom: 2rem;
+    }
+    .back-link:hover { color: var(--accent); }
+    @media (max-width: 768px) {
+      iframe { height: 420px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">CV</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="apropos.html">À propos</a></li>
+      <li><a href="projets.html" class="active">Projets</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="project-page">
+
+    <div class="project-header fade-in d1">
+      <a href="projets.html" class="back-link">← Retour aux projets</a>
+      <div class="project-meta">
+        <span class="breadcrumb">~/projets/bella-pizza</span>
+        <span class="badge-online">En ligne</span>
+      </div>
+      <h1 class="project-title">Bella <span class="accent">Pizza</span></h1>
+      <p class="project-desc">
+        Site vitrine complet pour une pizzeria toulousaine fictive. Menu interactif,
+        constructeur de pizza personnalisé, système de fidélité, mode sombre, easter eggs
+        et bien plus — le tout en HTML/CSS/JS vanilla.
+      </p>
+      <div class="project-tags">
+        <span class="tag">HTML</span>
+        <span class="tag">CSS</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">PWA</span>
+        <span class="tag">Responsive</span>
+      </div>
+    </div>
+
+    <div class="features-grid fade-in d2">
+      <div class="feature-item">
+        <span class="fi-icon">🍕</span>
+        <strong>Menu interactif</strong>
+        <p>16 pizzas avec pages détaillées et recettes</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">🛠️</span>
+        <strong>Pizza Builder</strong>
+        <p>Constructeur de pizza personnalisé</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">⭐</span>
+        <strong>Fidélité</strong>
+        <p>Système de points et récompenses</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">🌙</span>
+        <strong>Mode sombre</strong>
+        <p>Thème clair/sombre avec persistance</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">📱</span>
+        <strong>PWA</strong>
+        <p>Installable comme application mobile</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">🎮</span>
+        <strong>Easter eggs</strong>
+        <p>Mini-jeu et surprises cachées</p>
+      </div>
+    </div>
+
+    <div class="cta-wrap fade-in d3">
+      <a href="bella-pizza/index.html" class="btn btn-primary" target="_blank">
+        Visiter le site ↗
+      </a>
+    </div>
+
+    <div class="preview-wrap fade-in d3">
+      <div class="preview-frame">
+        <iframe
+          src="bella-pizza/index.html"
+          title="Bella Pizza"
+          scrolling="yes">
+        </iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 Charlie Viguié</p>
+  </footer>
+
+</body>
+</html>

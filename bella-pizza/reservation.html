@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Réservation – Bella Pizza</title>
+  <link rel="icon" href="img/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/darkmode.css">
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="img/logo.jpg" alt="Bella Pizza">
+    <span>Bella Pizza</span>
+  </a>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="reservation.html">Réservation</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="commande.html" class="btn-nav">🛒 Commander <span class="cart-count" id="cart-count">0</span></a></li>
+  </ul>
+</nav>
+
+<main style="padding-top:calc(var(--nav-h)+60px);padding-bottom:80px;padding-left:5%;padding-right:5%;">
+
+  <div class="section-title">
+    <h2>Réserver une Table</h2>
+    <div class="line"></div>
+    <p style="color:rgba(255,255,255,0.65);margin-top:12px;">Réservez votre table en quelques secondes. Nous vous confirmerons par téléphone.</p>
+  </div>
+
+  <!-- FORMULAIRE -->
+  <div class="reservation-card reveal" id="form-section">
+    <form id="resa-form" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="r-prenom">Prénom *</label>
+          <input type="text" id="r-prenom" required placeholder="Jean">
+          <div class="field-error">Ce champ est requis.</div>
+        </div>
+        <div class="form-group">
+          <label for="r-nom">Nom *</label>
+          <input type="text" id="r-nom" required placeholder="Dupont">
+          <div class="field-error">Ce champ est requis.</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="r-tel">Téléphone *</label>
+          <input type="tel" id="r-tel" required data-type="tel" placeholder="+33 6 12 34 56 78">
+          <div class="field-error">Numéro invalide.</div>
+        </div>
+        <div class="form-group">
+          <label for="r-email">Email</label>
+          <input type="email" id="r-email" placeholder="jean@exemple.com">
+          <div class="field-error">Email invalide.</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="r-date">Date *</label>
+          <input type="date" id="r-date" required>
+          <div class="field-error">Ce champ est requis.</div>
+        </div>
+        <div class="form-group">
+          <label for="r-heure">Heure *</label>
+          <select id="r-heure" required>
+            <option value="">Choisir un créneau</option>
+            <option value="11:30">11h30</option>
+            <option value="12:00">12h00</option>
+            <option value="12:30">12h30</option>
+            <option value="13:00">13h00</option>
+            <option value="13:30">13h30</option>
+            <option value="18:00">18h00</option>
+            <option value="18:30">18h30</option>
+            <option value="19:00">19h00</option>
+            <option value="19:30">19h30</option>
+            <option value="20:00">20h00</option>
+            <option value="20:30">20h30</option>
+            <option value="21:00">21h00</option>
+            <option value="21:30">21h30</option>
+          </select>
+          <div class="field-error">Ce champ est requis.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Nombre de personnes *</label>
+        <div class="persons-btns" id="persons-btns" role="group" aria-label="Nombre de personnes">
+          <button type="button" class="persons-btn selected" data-n="1">1</button>
+          <button type="button" class="persons-btn" data-n="2">2</button>
+          <button type="button" class="persons-btn" data-n="3">3</button>
+          <button type="button" class="persons-btn" data-n="4">4</button>
+          <button type="button" class="persons-btn" data-n="5">5</button>
+          <button type="button" class="persons-btn" data-n="6">6</button>
+          <button type="button" class="persons-btn" data-n="8">8</button>
+          <button type="button" class="persons-btn" data-n="10">10</button>
+          <button type="button" class="persons-btn" data-n="12+">12+</button>
+        </div>
+        <input type="hidden" id="r-persons" value="1">
+      </div>
+
+      <div class="form-group">
+        <label for="r-occasion">Occasion spéciale / Demandes particulières</label>
+        <textarea id="r-occasion" rows="3" placeholder="Anniversaire, allergie, chaise haute, menu végétarien…"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;" id="resa-submit">Réserver ma table</button>
+    </form>
+  </div>
+
+  <!-- CONFIRMATION -->
+  <div class="reservation-card" id="confirm-section" style="display:none;text-align:center;">
+    <svg class="checkmark" viewBox="0 0 52 52" aria-hidden="true" style="margin:0 auto 24px;">
+      <circle cx="26" cy="26" r="25"/>
+      <path d="M14 27l7 7 16-16"/>
+    </svg>
+    <h2 style="margin-bottom:12px;">Réservation enregistrée !</h2>
+    <p style="color:rgba(255,255,255,0.7);margin-bottom:8px;">Numéro : <strong id="resa-num" style="color:var(--gold)"></strong></p>
+    <div id="resa-recap" style="background:rgba(255,255,255,0.06);border-radius:10px;padding:20px;margin:20px 0;text-align:left;line-height:2;color:rgba(255,255,255,0.8);"></div>
+    <p style="color:rgba(255,255,255,0.55);font-size:0.9rem;margin-bottom:24px;">Nous vous confirmerons votre réservation par téléphone dans les plus brefs délais.</p>
+    <a href="index.html" class="btn btn-primary">Retour à l'accueil</a>
+  </div>
+
+  <!-- INFO HORAIRES -->
+  <div style="max-width:700px;margin:40px auto 0;background:var(--card-bg);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,0.07);">
+    <h3 style="margin-bottom:16px;color:var(--secondary);">ℹ️ Informations</h3>
+    <p style="color:rgba(255,255,255,0.7);line-height:1.8;font-size:0.95rem;">
+      La pizzeria est <strong>fermée le dimanche</strong>. Les réservations sont possibles du lundi au samedi, aux heures d'ouverture.
+      Pour les groupes de plus de 8 personnes, merci de nous contacter directement au <a href="tel:+33749014675" style="color:var(--secondary)">07 49 01 46 75</a>.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-bottom">&copy; <span id="year"></span> Bella Pizza — Tous droits réservés</div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Date min = aujourd'hui, désactiver dimanche
+const dateInput = document.getElementById('r-date');
+const today = new Date();
+dateInput.min = today.toISOString().split('T')[0];
+dateInput.addEventListener('change', () => {
+  const d = new Date(dateInput.value);
+  if (d.getDay() === 0) { toast('La pizzeria est fermée le dimanche. Veuillez choisir un autre jour.', 'error'); dateInput.value = ''; }
+});
+
+// Sélection nombre de personnes
+document.getElementById('persons-btns').addEventListener('click', e => {
+  if (!e.target.matches('.persons-btn')) return;
+  document.querySelectorAll('.persons-btn').forEach(b => b.classList.remove('selected'));
+  e.target.classList.add('selected');
+  document.getElementById('r-persons').value = e.target.dataset.n;
+});
+
+// Validation inline
+function validateLocal(inp) {
+  if (!inp.required && !inp.value) return true;
+  const rules = { email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, tel: /^[\d\s\+\-\(\)]{8,}$/ };
+  let err = '';
+  if (inp.required && !inp.value.trim()) err = 'Ce champ est requis.';
+  else if (inp.type === 'email' && inp.value && !rules.email.test(inp.value)) err = 'Email invalide.';
+  else if (inp.dataset.type === 'tel' && inp.value && !rules.tel.test(inp.value)) err = 'Téléphone invalide.';
+  inp.classList.toggle('error', !!err);
+  const errEl = inp.closest('.form-group')?.querySelector('.field-error');
+  if (errEl) { errEl.textContent = err; errEl.classList.toggle('show', !!err); }
+  return !err;
+}
+
+document.querySelectorAll('#resa-form input, #resa-form textarea, #resa-form select').forEach(inp => {
+  inp.addEventListener('blur', () => validateLocal(inp));
+  inp.addEventListener('input', () => { if (inp.classList.contains('error')) validateLocal(inp); });
+});
+
+document.getElementById('resa-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const fields = ['r-prenom','r-nom','r-tel','r-date','r-heure'];
+  let valid = fields.every(id => validateLocal(document.getElementById(id)));
+  if (!valid) { toast('Veuillez compléter tous les champs requis.', 'error'); return; }
+
+  const btn = document.getElementById('resa-submit');
+  btn.disabled = true; btn.textContent = '⏳ En cours…';
+
+  setTimeout(() => {
+    const num = 'RES-' + Date.now().toString(36).toUpperCase();
+    const prenom = document.getElementById('r-prenom').value;
+    const nom = document.getElementById('r-nom').value;
+    const tel = document.getElementById('r-tel').value;
+    const date = new Date(document.getElementById('r-date').value).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    const heure = document.getElementById('r-heure').value;
+    const persons = document.getElementById('r-persons').value;
+    const occasion = document.getElementById('r-occasion').value;
+
+    document.getElementById('resa-num').textContent = num;
+    document.getElementById('resa-recap').innerHTML =
+      `<strong>Nom :</strong> ${prenom} ${nom}<br>
+       <strong>Téléphone :</strong> ${tel}<br>
+       <strong>Date :</strong> ${date}<br>
+       <strong>Heure :</strong> ${heure}<br>
+       <strong>Personnes :</strong> ${persons}` +
+      (occasion ? `<br><strong>Occasion :</strong> ${occasion}` : '');
+
+    // Sauvegarde locale
+    const resas = JSON.parse(localStorage.getItem('bellaPizzaResas') || '[]');
+    resas.push({ num, prenom, nom, tel, date, heure, persons, occasion, created: new Date().toISOString() });
+    localStorage.setItem('bellaPizzaResas', JSON.stringify(resas));
+
+    document.getElementById('form-section').style.display = 'none';
+    const conf = document.getElementById('confirm-section');
+    conf.style.display = 'block';
+    conf.scrollIntoView({ behavior:'smooth' });
+  }, 1000);
+});
+</script>
+</body>
+</html>
