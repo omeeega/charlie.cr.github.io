@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Casse-Briques — Charlie Viguié</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .game-page {
+      position: relative;
+      z-index: 1;
+      padding: 96px 0 4rem;
+      min-height: 100vh;
+    }
+    .game-header {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem 2rem;
+    }
+    .game-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .badge-playable {
+      background: rgba(0,255,136,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0,255,136,0.3);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+    }
+    .game-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 0.6rem;
+    }
+    .game-desc {
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.7;
+      max-width: 640px;
+      margin-bottom: 1.4rem;
+    }
+    .game-tags { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .controls-hint {
+      display: inline-flex;
+      gap: 1.5rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 1.2rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .controls-hint span { color: var(--text); }
+    .difficulty-hint {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .diff-badge {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .game-frame-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .game-frame-container {
+      position: relative;
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0,255,136,0.07), 0 30px 60px rgba(0,0,0,0.6);
+    }
+    .game-frame-container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--cyan));
+    }
+    iframe {
+      display: block;
+      width: 100%;
+      height: 540px;
+      border: none;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-family: var(--mono);
+      transition: color 0.2s;
+      margin-bottom: 2rem;
+    }
+    .back-link:hover { color: var(--accent); }
+    @media (max-width: 768px) {
+      iframe { height: 420px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">CV</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="apropos.html">À propos</a></li>
+      <li><a href="projets.html" class="active">Projets</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="game-page">
+    <div class="game-header fade-in d1">
+      <a href="projets.html" class="back-link">← Retour aux projets</a>
+      <div class="game-meta">
+        <span class="breadcrumb">~/projets/casse-briques</span>
+        <span class="badge-playable">Jouable</span>
+      </div>
+      <h1 class="game-title">Casse-<span class="accent">Briques</span></h1>
+      <p class="game-desc">
+        Un jeu de casse-briques développé en <strong style="color:var(--text)">Python</strong> avec
+        <strong style="color:var(--text)">Pyxel</strong>. Plusieurs niveaux de difficulté, des power-ups,
+        un système de score et des effets visuels pixel art.
+      </p>
+      <div class="game-tags">
+        <span class="tag">Python</span>
+        <span class="tag">Pyxel</span>
+        <span class="tag">Pixel art</span>
+        <span class="tag">WebAssembly</span>
+      </div>
+      <div class="controls-hint">
+        <div>← → &nbsp;<span>Déplacer</span></div>
+        <div>Entrée &nbsp;<span>Recommencer</span></div>
+        <div>A &nbsp;<span>Menu difficulté</span></div>
+      </div>
+      <div class="difficulty-hint">
+        <span class="diff-badge">1 — Facile</span>
+        <span class="diff-badge">2 — Medium</span>
+        <span class="diff-badge">3 — Difficile</span>
+        <span class="diff-badge">4 — Extreme</span>
+        <span class="diff-badge">5 — Entraînement</span>
+        <span class="diff-badge">7 — Pouvoir</span>
+        <span class="diff-badge">8 — Impossible</span>
+      </div>
+    </div>
+
+    <div class="game-frame-wrap fade-in d2">
+      <div class="game-frame-container">
+        <iframe
+          src="casse-briques.html"
+          title="Casse-Briques"
+          allow="autoplay"
+          scrolling="no">
+        </iframe>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Charlie Viguié</p>
+  </footer>
+
+</body>
+</html>
