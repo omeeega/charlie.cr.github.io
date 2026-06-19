@@ -1,27 +1,30 @@
 (function () {
 
   /* ═══════════════════════════════════════════════════════════
-     1. LOADING SCREEN
+     1. LOADING SCREEN (première visite uniquement)
   ═══════════════════════════════════════════════════════════ */
-  const loader = document.createElement('div');
-  loader.id = 'loader';
-  loader.innerHTML =
-    '<div class="loader-line"><span class="t-prompt">~$</span> <span class="loader-cmd"></span><span class="t-cursor"></span></div>' +
-    '<div class="loader-bar"><div class="loader-fill"></div></div>';
-  document.body.prepend(loader);
-  const cmdEl = loader.querySelector('.loader-cmd');
-  const seq = ['boot portfolio.sh', 'chargement assets...', 'prêt.'];
-  let si = 0;
-  function typeSeq(s, cb) {
-    cmdEl.textContent = '';
-    let i = 0;
-    const iv = setInterval(() => { cmdEl.textContent += s[i++]; if (i >= s.length) { clearInterval(iv); setTimeout(cb, 160); } }, 36);
+  if (!localStorage.getItem('visited')) {
+    localStorage.setItem('visited', '1');
+    const loader = document.createElement('div');
+    loader.id = 'loader';
+    loader.innerHTML =
+      '<div class="loader-line"><span class="t-prompt">~$</span> <span class="loader-cmd"></span><span class="t-cursor"></span></div>' +
+      '<div class="loader-bar"><div class="loader-fill"></div></div>';
+    document.body.prepend(loader);
+    const cmdEl = loader.querySelector('.loader-cmd');
+    const seq = ['boot portfolio.sh', 'chargement assets...', 'prêt.'];
+    let si = 0;
+    function typeSeq(s, cb) {
+      cmdEl.textContent = '';
+      let i = 0;
+      const iv = setInterval(() => { cmdEl.textContent += s[i++]; if (i >= s.length) { clearInterval(iv); setTimeout(cb, 160); } }, 36);
+    }
+    function nextSeq() {
+      if (si < seq.length) typeSeq(seq[si++], nextSeq);
+      else setTimeout(() => { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 480); }, 180);
+    }
+    nextSeq();
   }
-  function nextSeq() {
-    if (si < seq.length) typeSeq(seq[si++], nextSeq);
-    else setTimeout(() => { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 480); }, 180);
-  }
-  nextSeq();
 
   /* ═══════════════════════════════════════════════════════════
      2. MATRIX / CONSTELLATION (fond animé)
