@@ -29,31 +29,13 @@
   const canvas = document.getElementById('matrix-canvas');
   if (canvas) {
     const ctx = canvas.getContext('2d');
-    let mode = localStorage.getItem('bg-mode') || 'matrix';
-    const chars = '01アイウエオカキクケコサシスセソタチツテト';
-    const SIZE = 14;
-    let cols, drops, pts = [];
-
-    function initMatrix() {
-      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-      cols = Math.floor(canvas.width / SIZE);
-      drops = Array.from({ length: cols }, () => Math.random() * -30);
-    }
-    function drawMatrix() {
-      ctx.fillStyle = 'rgba(5,5,10,0.06)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = getAccentColor(); ctx.font = SIZE + 'px Consolas,monospace';
-      for (let i = 0; i < drops.length; i++) {
-        if (drops[i] > 0) ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * SIZE, drops[i] * SIZE);
-        if (drops[i] * SIZE > canvas.height && Math.random() > 0.975) drops[i] = 0;
-        drops[i]++;
-      }
-    }
+    let pts = [];
 
     function initConst() {
       canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-      pts = Array.from({ length: 55 }, () => ({
+      pts = Array.from({ length: 65 }, () => ({
         x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5
+        vx: (Math.random() - 0.5) * 0.45, vy: (Math.random() - 0.5) * 0.45
       }));
     }
     function drawConst() {
@@ -68,28 +50,17 @@
       });
       for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
         const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
-        if (d < 120) {
+        if (d < 130) {
           ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
-          ctx.strokeStyle = ac.replace(')', ',' + (1 - d / 120) * 0.3 + ')').replace('rgb', 'rgba');
+          ctx.strokeStyle = ac.replace(')', ',' + (1 - d / 130) * 0.35 + ')').replace('rgb', 'rgba');
           ctx.lineWidth = 0.6; ctx.stroke();
         }
       }
     }
 
-    function startBg() {
-      if (mode === 'matrix') { initMatrix(); setInterval(drawMatrix, 55); }
-      else { initConst(); setInterval(drawConst, 28); }
-    }
-    window.addEventListener('resize', () => { mode === 'matrix' ? initMatrix() : initConst(); });
-    startBg();
-
-    window.toggleBg = function () {
-      mode = mode === 'matrix' ? 'constellation' : 'matrix';
-      localStorage.setItem('bg-mode', mode);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const btn = document.getElementById('bg-toggle');
-      if (btn) btn.title = mode === 'matrix' ? 'Passer en constellation' : 'Passer en matrix';
-    };
+    window.addEventListener('resize', initConst);
+    initConst();
+    setInterval(drawConst, 28);
   }
 
   /* ═══════════════════════════════════════════════════════════
@@ -247,51 +218,6 @@
     return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00ff88';
   }
 
-  /* ═══════════════════════════════════════════════════════════
-     14. INTERNATIONALISATION FR / EN
-  ═══════════════════════════════════════════════════════════ */
-  const I18N = {
-    fr: {
-      'nav-home': 'Accueil', 'nav-about': 'À propos', 'nav-projects': 'Projets', 'nav-contact': 'Contact',
-      'hero-label': '$ whoami', 'hero-cta1': 'Mes projets', 'hero-cta2': 'En savoir plus',
-      'scroll-hint': 'explorer'
-    },
-    en: {
-      'nav-home': 'Home', 'nav-about': 'About', 'nav-projects': 'Projects', 'nav-contact': 'Contact',
-      'hero-label': '$ whoami', 'hero-cta1': 'My projects', 'hero-cta2': 'Learn more',
-      'scroll-hint': 'explore'
-    }
-  };
-
-  const savedLang = localStorage.getItem('lang') || 'fr';
-  document.documentElement.lang = savedLang;
-  applyLang(savedLang);
-
-  window.toggleLang = function () {
-    const next = document.documentElement.lang === 'fr' ? 'en' : 'fr';
-    document.documentElement.lang = next;
-    localStorage.setItem('lang', next);
-    applyLang(next);
-    const btn = document.getElementById('i18n-toggle');
-    if (btn) btn.textContent = next === 'fr' ? 'EN' : 'FR';
-    // Relancer la typing animation avec la bonne langue
-    const typEl = document.querySelector('[data-type-fr]');
-    if (typEl) { typEl.innerHTML = ''; setTimeout(() => startTyping(), 50); }
-  };
-
-  function applyLang(lang) {
-    const t = I18N[lang] || I18N.fr;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.dataset.i18n;
-      if (t[key]) el.textContent = t[key];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      const key = el.dataset.i18nPlaceholder;
-      if (t[key]) el.placeholder = t[key];
-    });
-    const langBtn = document.getElementById('i18n-toggle');
-    if (langBtn) langBtn.textContent = lang === 'fr' ? 'EN' : 'FR';
-  }
 
   /* ═══════════════════════════════════════════════════════════
      15. RECHERCHE PROJETS
@@ -362,16 +288,6 @@
     requestAnimationFrame(() => overlay.classList.add('show'));
   }
 
-  /* ═══════════════════════════════════════════════════════════
-     19. PWA — PROMPT D'INSTALLATION
-  ═══════════════════════════════════════════════════════════ */
-  let deferredPrompt;
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    const btn = document.getElementById('pwa-install');
-    if (btn) { btn.style.display = 'inline-flex'; btn.addEventListener('click', () => { deferredPrompt.prompt(); btn.style.display = 'none'; }); }
-  });
 
   /* ═══════════════════════════════════════════════════════════
      20. FORMULAIRE DE CONTACT (Supabase)
