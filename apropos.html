@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>À propos — Charlie Costa-Roy</title>
+  <meta name="description" content="En savoir plus sur Charlie Costa-Roy : parcours, compétences en cybersécurité et projets techniques.">
+  <meta property="og:title" content="À propos — Charlie Costa-Roy">
+  <meta property="og:description" content="Étudiant passionné par la cybersécurité, le réseau et la programmation Python.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='14' fill='%2305050a'/%3E%3Ctext y='72' x='10' font-size='60' font-family='monospace' fill='%2300ff88'%3E%3E_%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,10 +16,10 @@
   <nav>
     <a href="index.html" class="nav-logo">CV</a>
     <ul class="nav-links">
-      <li><a href="index.html"              >Accueil</a></li>
+      <li><a href="index.html"               >Accueil</a></li>
       <li><a href="apropos.html" class="active">À propos</a></li>
-      <li><a href="projets.html"            >Projets</a></li>
-      <li><a href="contact.html"            >Contact</a></li>
+      <li><a href="projets.html"             >Projets</a></li>
+      <li><a href="contact.html"             >Contact</a></li>
     </ul>
   </nav>
 
@@ -28,7 +33,7 @@
 
       <div class="about-grid">
 
-        <!-- Colonne gauche : bio + compétences -->
+        <!-- Colonne gauche : bio + compétences + timeline -->
         <div>
           <div class="about-bio fade-in d2">
             <p>
@@ -42,22 +47,65 @@
               pour mieux identifier leurs failles et les corriger.
             </p>
             <p>
-              En parallèle, je développe des projets personnels en Python pour
-              renforcer mes compétences en programmation.
+              En parallèle, je développe des projets personnels en Python et en
+              JavaScript pour renforcer mes compétences en programmation.
             </p>
           </div>
 
+          <!-- 15. STATS ANIMÉES -->
+          <div class="stats-row reveal">
+            <div class="stat-item">
+              <span class="stat-number" data-count="3" data-suffix="">0</span>
+              <span class="stat-label">Projets en ligne</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" data-count="8" data-suffix="+">0</span>
+              <span class="stat-label">Technos maîtrisées</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" data-count="2" data-suffix="">0</span>
+              <span class="stat-label">Jeux jouables</span>
+            </div>
+          </div>
+
+          <!-- 17. COMPÉTENCES AVEC ICÔNES -->
           <div class="skills-block fade-in d3">
             <span class="skills-label">Compétences</span>
             <div class="skills-wrap">
-              <span class="skill">Linux</span>
-              <span class="skill">Réseau</span>
-              <span class="skill">Python</span>
-              <span class="skill">Git</span>
-              <span class="skill">CTF</span>
-              <span class="skill">OSINT</span>
-              <span class="skill">Scripting</span>
-              <span class="skill">HTML / CSS</span>
+              <span class="skill"><span class="skill-icon">🐧</span>Linux</span>
+              <span class="skill"><span class="skill-icon">🌐</span>Réseau</span>
+              <span class="skill"><span class="skill-icon">🐍</span>Python</span>
+              <span class="skill"><span class="skill-icon">🔀</span>Git</span>
+              <span class="skill"><span class="skill-icon">🚩</span>CTF</span>
+              <span class="skill"><span class="skill-icon">🔍</span>OSINT</span>
+              <span class="skill"><span class="skill-icon">📜</span>Scripting</span>
+              <span class="skill"><span class="skill-icon">🌍</span>HTML / CSS</span>
+              <span class="skill"><span class="skill-icon">⚡</span>JavaScript</span>
+            </div>
+          </div>
+
+          <!-- 14. TIMELINE -->
+          <span class="section-label reveal">Parcours</span>
+          <div class="timeline">
+            <div class="tl-item reveal">
+              <span class="tl-date">2023 — 2024</span>
+              <h4>Terminale NSI</h4>
+              <p>Algorithmique, Python, bases de données, réseaux — découverte de la programmation et du numérique.</p>
+            </div>
+            <div class="tl-item reveal">
+              <span class="tl-date">2024 — 2025</span>
+              <h4>Développement personnel</h4>
+              <p>Jeu platformer Python/Pyxel, casse-briques, site Bella Pizza — projets de plus en plus ambitieux.</p>
+            </div>
+            <div class="tl-item reveal">
+              <span class="tl-date">2025 — 2026</span>
+              <h4>Cybersécurité & Web</h4>
+              <p>Apprentissage actif : CTF, OSINT, réseau, et déploiement de ce portfolio GitHub Pages.</p>
+            </div>
+            <div class="tl-item reveal">
+              <span class="tl-date">En cours</span>
+              <h4>Objectif sécurité offensive</h4>
+              <p>Pentest, analyse de vulnérabilités, certifications — progression continue vers la sécu pro.</p>
             </div>
           </div>
         </div>
@@ -77,8 +125,9 @@
               <p>&nbsp;&nbsp;<span class="t-key">"rôle"</span>: <span class="t-val">"Étudiant"</span>,</p>
               <p>&nbsp;&nbsp;<span class="t-key">"domaine"</span>: <span class="t-val">"Cybersécurité"</span>,</p>
               <p>&nbsp;&nbsp;<span class="t-key">"os"</span>: <span class="t-val">"Linux / Windows"</span>,</p>
-              <p>&nbsp;&nbsp;<span class="t-key">"langages"</span>: <span class="t-val">["Python", "HTML", "CSS"]</span>,</p>
-              <p>&nbsp;&nbsp;<span class="t-key">"objectif"</span>: <span class="t-val">"Progresser en sécu offensive"</span></p>
+              <p>&nbsp;&nbsp;<span class="t-key">"langages"</span>: <span class="t-val">["Python", "HTML", "CSS", "JS"]</span>,</p>
+              <p>&nbsp;&nbsp;<span class="t-key">"objectif"</span>: <span class="t-val">"Progresser en sécu offensive"</span>,</p>
+              <p>&nbsp;&nbsp;<span class="t-key">"contact"</span>: <span class="t-val">"charlie.roycosta@gmail.com"</span></p>
               <p class="t-dim">}</p>
               <p><span class="t-prompt">~$</span> <span class="t-cursor"></span></p>
             </div>
@@ -90,8 +139,16 @@
   </div>
 
   <footer>
-    <p>© 2026 Charlie Costa-Roy</p>
+    <div class="footer-inner">
+      <p>© 2026 Charlie Costa-Roy</p>
+      <div class="footer-links">
+        <a href="https://github.com/omeeega" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:charlie.roycosta@gmail.com">Email</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
   </footer>
 
+  <script src="script.js"></script>
 </body>
 </html>

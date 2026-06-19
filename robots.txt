@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://omeeega.github.io/charlie.cr.github.io/sitemap.xml

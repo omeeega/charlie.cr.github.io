@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Projets — Charlie Viguié</title>
+  <title>Projets — Charlie Costa-Roy</title>
+  <meta name="description" content="Projets de Charlie Costa-Roy : jeux Python jouables en WebAssembly, site web Bella Pizza.">
+  <meta property="og:title" content="Projets — Charlie Costa-Roy">
+  <meta property="og:description" content="Jeux Pyxel jouables dans le navigateur et site vitrine Bella Pizza.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='14' fill='%2305050a'/%3E%3Ctext y='72' x='10' font-size='60' font-family='monospace' fill='%2300ff88'%3E%3E_%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,10 +16,10 @@
   <nav>
     <a href="index.html" class="nav-logo">CV</a>
     <ul class="nav-links">
-      <li><a href="index.html"              >Accueil</a></li>
-      <li><a href="apropos.html"            >À propos</a></li>
+      <li><a href="index.html"               >Accueil</a></li>
+      <li><a href="apropos.html"             >À propos</a></li>
       <li><a href="projets.html" class="active">Projets</a></li>
-      <li><a href="contact.html"            >Contact</a></li>
+      <li><a href="contact.html"             >Contact</a></li>
     </ul>
   </nav>
 
@@ -29,7 +34,7 @@
       <div class="projects-grid">
 
         <!-- Jeu Platformer -->
-        <a href="jeu-platformer.html" class="project-card project-card-link fade-in d2">
+        <a href="jeu-platformer.html" class="project-card project-card-link reveal">
           <div class="card-top">
             <span class="card-icon">🎮</span>
             <span class="badge badge-playable">Jouable</span>
@@ -49,7 +54,7 @@
         </a>
 
         <!-- Casse-Briques -->
-        <a href="jeu-casse-briques.html" class="project-card project-card-link fade-in d3">
+        <a href="jeu-casse-briques.html" class="project-card project-card-link reveal">
           <div class="card-top">
             <span class="card-icon">🧱</span>
             <span class="badge badge-playable">Jouable</span>
@@ -68,11 +73,14 @@
           <span class="card-play-hint">▶ Jouer maintenant</span>
         </a>
 
-        <!-- Bella Pizza -->
-        <a href="projet-bella-pizza.html" class="project-card project-card-link fade-in d4">
+        <!-- 19. Bella Pizza avec badge NOUVEAU -->
+        <a href="projet-bella-pizza.html" class="project-card project-card-link reveal">
           <div class="card-top">
             <span class="card-icon">🍕</span>
-            <span class="badge badge-playable">En ligne</span>
+            <div style="display:flex;gap:0.4rem;">
+              <span class="badge badge-new">Nouveau</span>
+              <span class="badge badge-playable">En ligne</span>
+            </div>
           </div>
           <h3>Bella Pizza</h3>
           <p>
@@ -83,12 +91,13 @@
             <span class="tag">HTML</span>
             <span class="tag">CSS</span>
             <span class="tag">JavaScript</span>
+            <span class="tag">PWA</span>
           </div>
           <span class="card-play-hint">→ Voir le site</span>
         </a>
 
         <!-- Placeholder -->
-        <article class="project-card placeholder fade-in d5">
+        <article class="project-card placeholder reveal">
           <div class="ph-inner">
             <span>+</span>
             <p>D'autres projets arrivent...</p>
@@ -100,8 +109,16 @@
   </div>
 
   <footer>
-    <p>© 2026 Charlie Viguié</p>
+    <div class="footer-inner">
+      <p>© 2026 Charlie Costa-Roy</p>
+      <div class="footer-links">
+        <a href="https://github.com/omeeega" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:charlie.roycosta@gmail.com">Email</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
   </footer>
 
+  <script src="script.js"></script>
 </body>
 </html>

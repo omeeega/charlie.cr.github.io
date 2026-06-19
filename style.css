@@ -535,6 +535,369 @@ footer {
 }
 
 /* ===================================================
+   13. LOADING SCREEN
+   =================================================== */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+#loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-line {
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  color: var(--text);
+}
+.loader-line .t-prompt { color: var(--accent); margin-right: 0.5rem; }
+.loader-cmd { color: var(--cyan); }
+.loader-bar {
+  width: 180px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loader-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  box-shadow: 0 0 8px var(--accent);
+  animation: loaderFill 1.8s ease forwards;
+}
+@keyframes loaderFill {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* ===================================================
+   5. CUSTOM CURSOR
+   =================================================== */
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px var(--accent);
+  transition: width 0.15s, height 0.15s;
+}
+.cursor-dot.hover { width: 10px; height: 10px; }
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgba(0,255,136,0.35);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9997;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, border-color 0.2s;
+}
+.cursor-ring.hover {
+  width: 46px;
+  height: 46px;
+  border-color: rgba(0,255,136,0.6);
+}
+
+/* ===================================================
+   6. BARRE DE PROGRESSION
+   =================================================== */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  z-index: 201;
+  width: 0%;
+  box-shadow: 0 0 8px var(--accent);
+  pointer-events: none;
+}
+
+/* ===================================================
+   7. BACK TO TOP
+   =================================================== */
+#back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 40px;
+  height: 40px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.3s, transform 0.3s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  z-index: 90;
+}
+#back-to-top.visible { opacity: 1; transform: translateY(0); }
+#back-to-top:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(0,255,136,0.18);
+}
+
+/* ===================================================
+   2. TOAST NOTIFICATION
+   =================================================== */
+.toast {
+  position: fixed;
+  bottom: 5.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(14px);
+  background: var(--card);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 9500;
+  box-shadow: 0 0 24px rgba(0,255,136,0.22);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===================================================
+   9. TRANSITIONS DE PAGES
+   =================================================== */
+body {
+  animation: pageEnter 0.28s ease both;
+}
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+body.page-exit {
+  animation: pageExit 0.28s ease forwards;
+}
+@keyframes pageExit {
+  to { opacity: 0; transform: translateY(-6px); }
+}
+
+/* ===================================================
+   10. MENU HAMBURGER MOBILE
+   =================================================== */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 6px 4px;
+}
+.nav-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ===================================================
+   8. SCROLL REVEAL
+   =================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal:nth-child(2) { transition-delay: 0.08s; }
+.reveal:nth-child(3) { transition-delay: 0.16s; }
+.reveal:nth-child(4) { transition-delay: 0.24s; }
+
+/* ===================================================
+   14. TIMELINE
+   =================================================== */
+.section-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 1.2rem;
+  margin-top: 2.5rem;
+  display: block;
+}
+.timeline {
+  position: relative;
+  padding-left: 1.8rem;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 4px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 1.8rem;
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -2.12rem;
+  top: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+.tl-date {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.tl-item h4 {
+  font-size: 0.93rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+.tl-item p {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ===================================================
+   15. COMPTEUR DE STATS
+   =================================================== */
+.stats-row {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+.stat-item { text-align: left; }
+.stat-number {
+  font-family: var(--mono);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  display: block;
+}
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 0.3rem;
+  display: block;
+}
+
+/* ===================================================
+   16. FOOTER AMÉLIORÉ
+   =================================================== */
+footer .footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+.footer-links {
+  display: flex;
+  gap: 1.4rem;
+}
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--accent); }
+
+/* ===================================================
+   17. ICÔNES COMPÉTENCES
+   =================================================== */
+.skill { display: inline-flex; align-items: center; gap: 0.35rem; }
+.skill-icon { font-size: 0.82rem; line-height: 1; }
+
+/* ===================================================
+   18. GLOW HOVER CARTES (amélioré)
+   =================================================== */
+.project-card:hover {
+  border-color: rgba(0,255,136,0.35);
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.55), 0 0 40px rgba(0,255,136,0.1);
+}
+
+/* ===================================================
+   19. BADGE NOUVEAU
+   =================================================== */
+.badge-new {
+  background: rgba(0,212,255,0.1);
+  color: var(--cyan);
+  border: 1px solid rgba(0,212,255,0.3);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 3px;
+}
+
+/* ===================================================
+   CONTACT - COPY BTN
+   =================================================== */
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 0.6rem;
+}
+.copy-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ===================================================
    RESPONSIVE
    =================================================== */
 @media (max-width: 768px) {
@@ -542,9 +905,27 @@ footer {
   .nav-links { gap: 1.5rem; }
   .about-grid { grid-template-columns: 1fr; gap: 2rem; }
   .container { padding: 0 1.5rem; }
+  .stats-row { gap: 1.5rem; }
+  footer .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 600px) {
+  .nav-toggle { display: flex; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0; right: 0;
+    background: rgba(5,5,10,0.97);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    padding: 1.5rem 2rem;
+    gap: 1.5rem;
+    z-index: 99;
+  }
+  .nav-links.open { display: flex; }
 }
 @media (max-width: 480px) {
-  .nav-links { gap: 1rem; }
   .nav-links a { font-size: 0.8rem; }
   .hero h1 { letter-spacing: -2px; }
   .contact-hero h1 { letter-spacing: -2px; }
