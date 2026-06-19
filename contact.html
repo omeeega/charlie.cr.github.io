@@ -1,26 +1,43 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark" data-accent="green">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact — Charlie Costa-Roy</title>
   <meta name="description" content="Contactez Charlie Costa-Roy pour collaborer, échanger sur la cybersécurité ou simplement dire bonjour.">
   <meta property="og:title" content="Contact — Charlie Costa-Roy">
-  <meta property="og:description" content="Contactez Charlie Costa-Roy : email et GitHub disponibles.">
+  <meta property="og:description" content="Contactez Charlie Costa-Roy : formulaire, email et GitHub disponibles.">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='14' fill='%2305050a'/%3E%3Ctext y='72' x='10' font-size='60' font-family='monospace' fill='%2300ff88'%3E%3E_%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <canvas id="matrix-canvas"></canvas>
+
+  <div class="palette-panel" id="palette-panel">
+    <button class="swatch" data-a="green"  onclick="setAccent('green')"  title="Vert"></button>
+    <button class="swatch" data-a="cyan"   onclick="setAccent('cyan')"   title="Cyan"></button>
+    <button class="swatch" data-a="violet" onclick="setAccent('violet')" title="Violet"></button>
+    <button class="swatch" data-a="orange" onclick="setAccent('orange')" title="Orange"></button>
+  </div>
 
   <nav>
     <a href="index.html" class="nav-logo">CV</a>
     <ul class="nav-links">
-      <li><a href="index.html"               >Accueil</a></li>
-      <li><a href="apropos.html"             >À propos</a></li>
-      <li><a href="projets.html"             >Projets</a></li>
-      <li><a href="contact.html" class="active">Contact</a></li>
+      <li><a href="index.html"                 data-i18n="nav-home">Accueil</a></li>
+      <li><a href="apropos.html"               data-i18n="nav-about">À propos</a></li>
+      <li><a href="projets.html"               data-i18n="nav-projects">Projets</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="contact.html" class="active" data-i18n="nav-contact">Contact</a></li>
     </ul>
+    <div class="nav-controls">
+      <button id="bg-toggle"    class="nav-ctrl-btn" onclick="toggleBg()"    title="Fond">✦</button>
+      <button id="theme-toggle" class="nav-ctrl-btn" onclick="toggleTheme()" title="Thème">☀️</button>
+      <button id="palette-btn"  class="nav-ctrl-btn" title="Palette">🎨</button>
+      <button id="i18n-toggle"  class="nav-ctrl-btn" onclick="toggleLang()" title="Switch language">EN</button>
+      <button id="pwa-install"  class="nav-ctrl-btn" title="Installer">⬇ Installer</button>
+    </div>
   </nav>
 
   <main class="contact-hero">
@@ -35,16 +52,54 @@
       ou simplement dire bonjour ?
     </p>
 
-    <div class="contact-links fade-in d4">
+    <!-- Formulaire de contact -->
+    <form id="contact-form" class="contact-form fade-in d4" novalidate>
+      <div class="form-group">
+        <label for="contact-name" data-i18n="form-name">Votre nom</label>
+        <input
+          type="text"
+          id="contact-name"
+          name="name"
+          placeholder="Charlie Dupont"
+          required
+          autocomplete="name"
+        >
+      </div>
+      <div class="form-group">
+        <label for="contact-email" data-i18n="form-email">Votre email</label>
+        <input
+          type="email"
+          id="contact-email"
+          name="email"
+          placeholder="vous@example.com"
+          required
+          autocomplete="email"
+        >
+      </div>
+      <div class="form-group">
+        <label for="contact-message" data-i18n="form-message">Message</label>
+        <textarea
+          id="contact-message"
+          name="message"
+          rows="5"
+          placeholder="Bonjour Charlie, je voudrais..."
+          required
+        ></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary form-submit" data-i18n="form-submit">Envoyer</button>
+      <p class="form-status" id="form-status" aria-live="polite"></p>
+    </form>
 
-      <!-- 1. EMAIL -->
+    <!-- Liens directs -->
+    <div class="contact-links fade-in d5">
+
       <a href="mailto:charlie.roycosta@gmail.com" class="contact-link">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="4" width="20" height="16" rx="2"/>
           <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
         </svg>
         charlie.roycosta@gmail.com
-        <button id="copy-email" class="copy-btn" title="Copier l'email">
+        <button id="copy-email" class="copy-btn" title="Copier l'email" type="button">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
             <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
@@ -53,7 +108,6 @@
         </button>
       </a>
 
-      <!-- GITHUB -->
       <a href="https://github.com/omeeega" target="_blank" rel="noopener" class="contact-link">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
@@ -75,6 +129,8 @@
     </div>
   </footer>
 
+  <script src="config.js"></script>
+  <script src="db.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

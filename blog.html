@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark" data-accent="green">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Charlie Costa-Roy</title>
+  <meta name="description" content="Articles de Charlie Costa-Roy sur la cybersécurité, le développement et les CTF.">
+  <meta property="og:title" content="Blog — Charlie Costa-Roy">
+  <meta property="og:description" content="Articles sur la cybersécurité, le CTF et le développement Python.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='14' fill='%2305050a'/%3E%3Ctext y='72' x='10' font-size='60' font-family='monospace' fill='%2300ff88'%3E%3E_%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="matrix-canvas"></canvas>
+
+  <div class="palette-panel" id="palette-panel">
+    <button class="swatch" data-a="green"  onclick="setAccent('green')"  title="Vert"></button>
+    <button class="swatch" data-a="cyan"   onclick="setAccent('cyan')"   title="Cyan"></button>
+    <button class="swatch" data-a="violet" onclick="setAccent('violet')" title="Violet"></button>
+    <button class="swatch" data-a="orange" onclick="setAccent('orange')" title="Orange"></button>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">CV</a>
+    <ul class="nav-links">
+      <li><a href="index.html"   data-i18n="nav-home">Accueil</a></li>
+      <li><a href="apropos.html" data-i18n="nav-about">À propos</a></li>
+      <li><a href="projets.html" data-i18n="nav-projects">Projets</a></li>
+      <li><a href="blog.html" class="active">Blog</a></li>
+      <li><a href="contact.html" data-i18n="nav-contact">Contact</a></li>
+    </ul>
+    <div class="nav-controls">
+      <button id="bg-toggle"    class="nav-ctrl-btn" onclick="toggleBg()"    title="Fond">✦</button>
+      <button id="theme-toggle" class="nav-ctrl-btn" onclick="toggleTheme()" title="Thème">☀️</button>
+      <button id="palette-btn"  class="nav-ctrl-btn" title="Palette">🎨</button>
+      <button id="i18n-toggle"  class="nav-ctrl-btn" onclick="toggleLang()" title="Switch language">EN</button>
+      <button id="pwa-install"  class="nav-ctrl-btn" title="Installer">⬇ Installer</button>
+    </div>
+  </nav>
+
+  <div class="page-inner">
+    <div class="container">
+
+      <header class="page-header fade-in d1">
+        <span class="breadcrumb">~/blog</span>
+        <h1>Blog <span class="accent">&amp;</span> Notes</h1>
+      </header>
+
+      <p class="blog-intro fade-in d2">
+        Writeups CTF, tutoriels et réflexions sur la cybersécurité et le développement.
+      </p>
+
+      <!-- Articles statiques (toujours affichés) -->
+      <div id="blog-grid" class="blog-grid">
+
+        <article class="blog-card reveal">
+          <div class="blog-card-top">
+            <span class="blog-tag">CTF</span>
+            <span class="blog-date">Bientôt</span>
+          </div>
+          <h3>Writeup — Root-Me : Web Client</h3>
+          <p>Analyse détaillée des challenges Web Client de Root-Me : XSS, CSRF, bypass de restrictions JavaScript...</p>
+          <span class="blog-read-more">Lire la suite →</span>
+        </article>
+
+        <article class="blog-card reveal">
+          <div class="blog-card-top">
+            <span class="blog-tag">Python</span>
+            <span class="blog-date">Bientôt</span>
+          </div>
+          <h3>Créer un jeu rétro avec Pyxel</h3>
+          <p>Comment j'ai développé un platformer et un casse-briques entièrement en Python avec la librairie Pyxel, et comment les exporter en WebAssembly.</p>
+          <span class="blog-read-more">Lire la suite →</span>
+        </article>
+
+        <article class="blog-card reveal">
+          <div class="blog-card-top">
+            <span class="blog-tag">Cybersécurité</span>
+            <span class="blog-date">Bientôt</span>
+          </div>
+          <h3>Débuter en OSINT : outils et méthodes</h3>
+          <p>Introduction à l'OSINT (Open Source Intelligence) : les outils incontournables, les bonnes pratiques et comment s'entraîner légalement.</p>
+          <span class="blog-read-more">Lire la suite →</span>
+        </article>
+
+      </div>
+
+      <!-- Articles depuis Supabase (injectés par script.js) -->
+      <div id="blog-db-section" style="display:none;">
+        <h3 class="subsection-title">Articles récents</h3>
+        <div id="blog-db-grid" class="blog-grid"></div>
+      </div>
+
+      <p id="blog-db-status" class="blog-status"></p>
+
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <p>© 2026 Charlie Costa-Roy</p>
+      <div class="footer-links">
+        <a href="https://github.com/omeeega" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:charlie.roycosta@gmail.com">Email</a>
+        <a href="projets.html">Projets</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="db.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

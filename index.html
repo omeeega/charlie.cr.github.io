@@ -1,46 +1,71 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark" data-accent="green">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Charlie Costa-Roy — Portfolio</title>
   <meta name="description" content="Portfolio de Charlie Costa-Roy, étudiant passionné par la cybersécurité et le développement de projets techniques.">
+  <meta name="theme-color" content="#00ff88">
   <meta property="og:title" content="Charlie Costa-Roy — Portfolio">
   <meta property="og:description" content="Étudiant passionné par la cybersécurité et le développement de projets techniques.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://omeeega.github.io/charlie.cr.github.io/">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='14' fill='%2305050a'/%3E%3Ctext y='72' x='10' font-size='60' font-family='monospace' fill='%2300ff88'%3E%3E_%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <canvas id="matrix-canvas"></canvas>
 
+  <!-- Palette panel -->
+  <div class="palette-panel" id="palette-panel">
+    <button class="swatch" data-a="green"  onclick="setAccent('green')"  title="Vert"></button>
+    <button class="swatch" data-a="cyan"   onclick="setAccent('cyan')"   title="Cyan"></button>
+    <button class="swatch" data-a="violet" onclick="setAccent('violet')" title="Violet"></button>
+    <button class="swatch" data-a="orange" onclick="setAccent('orange')" title="Orange"></button>
+  </div>
+
   <nav>
     <a href="index.html" class="nav-logo">CV</a>
     <ul class="nav-links">
-      <li><a href="index.html"    class="active">Accueil</a></li>
-      <li><a href="apropos.html"              >À propos</a></li>
-      <li><a href="projets.html"              >Projets</a></li>
-      <li><a href="contact.html"              >Contact</a></li>
+      <li><a href="index.html"    class="active" data-i18n="nav-home">Accueil</a></li>
+      <li><a href="apropos.html"               data-i18n="nav-about">À propos</a></li>
+      <li><a href="projets.html"               data-i18n="nav-projects">Projets</a></li>
+      <li><a href="blog.html"                                        >Blog</a></li>
+      <li><a href="contact.html"               data-i18n="nav-contact">Contact</a></li>
     </ul>
+    <div class="nav-controls">
+      <button id="bg-toggle"     class="nav-ctrl-btn" onclick="toggleBg()"   title="Changer le fond">✦</button>
+      <button id="theme-toggle"  class="nav-ctrl-btn" onclick="toggleTheme()" title="Changer le thème">☀️</button>
+      <button id="palette-btn"   class="nav-ctrl-btn" title="Palette couleurs">🎨</button>
+      <button id="i18n-toggle"   class="nav-ctrl-btn" onclick="toggleLang()" title="Switch language">EN</button>
+      <button id="pwa-install"   class="nav-ctrl-btn" title="Installer l'app">⬇ Installer</button>
+    </div>
   </nav>
 
   <main class="hero">
-    <p class="hero-label fade-in d1">$ whoami</p>
+    <p class="hero-label fade-in d1" data-i18n="hero-label">$ whoami</p>
+
+    <!-- 5. AVATAR -->
+    <div class="hero-avatar fade-in d1">CCR</div>
 
     <h1 class="glitch fade-in d2" data-text="Charlie Costa-Roy">
       Charlie <span class="accent">Costa-Roy</span>
     </h1>
 
-    <p class="hero-sub fade-in d3" data-type="Étudiant passionné par la cybersécurité et le développement de projets techniques."></p>
+    <!-- 3. TYPING ANIMATION (data-type-fr / data-type-en) -->
+    <p class="hero-sub fade-in d3"
+       data-type-fr="Étudiant passionné par la cybersécurité et le développement de projets techniques."
+       data-type-en="Student passionate about cybersecurity and technical project development.">
+    </p>
 
     <div class="hero-actions fade-in d4">
-      <a href="projets.html" class="btn btn-primary">Mes projets</a>
-      <a href="apropos.html" class="btn btn-ghost">En savoir plus</a>
+      <a href="projets.html" class="btn btn-primary" data-i18n="hero-cta1">Mes projets</a>
+      <a href="apropos.html" class="btn btn-ghost"   data-i18n="hero-cta2">En savoir plus</a>
     </div>
 
-    <span class="scroll-hint fade-in d5">explorer</span>
+    <span class="scroll-hint fade-in d5" data-i18n="scroll-hint">explorer</span>
   </main>
 
   <footer>
@@ -49,11 +74,13 @@
       <div class="footer-links">
         <a href="https://github.com/omeeega" target="_blank" rel="noopener">GitHub</a>
         <a href="mailto:charlie.roycosta@gmail.com">Email</a>
-        <a href="projets.html">Projets</a>
+        <a href="blog.html">Blog</a>
       </div>
     </div>
   </footer>
 
+  <script src="config.js"></script>
+  <script src="db.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
