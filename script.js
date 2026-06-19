@@ -1,5 +1,8 @@
 (function () {
 
+  /* Nettoyage clé obsolète de l'ancienne version avec matrix */
+  localStorage.removeItem('bg-mode');
+
   /* ═══════════════════════════════════════════════════════════
      1. LOADING SCREEN (première visite uniquement)
   ═══════════════════════════════════════════════════════════ */
@@ -27,12 +30,15 @@
   }
 
   /* ═══════════════════════════════════════════════════════════
-     2. MATRIX / CONSTELLATION (fond animé)
+     2. CONSTELLATION (fond animé) — lazy + repulsion souris (#13, #20)
   ═══════════════════════════════════════════════════════════ */
   const canvas = document.getElementById('matrix-canvas');
   if (canvas) {
     const ctx = canvas.getContext('2d');
     let pts = [];
+    let mouseX = -9999, mouseY = -9999;
+
+    window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
 
     function initConst() {
       canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -45,8 +51,20 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const ac = getAccentColor();
       pts.forEach(p => {
+        /* repulsion souris (#20) */
+        const dx = p.x - mouseX, dy = p.y - mouseY;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 100 && dist > 0) {
+          const force = ((100 - dist) / 100) * 0.6;
+          p.vx += (dx / dist) * force;
+          p.vy += (dy / dist) * force;
+        }
+        /* borne de vitesse */
+        const spd = Math.hypot(p.vx, p.vy);
+        if (spd > 1.8) { p.vx = (p.vx / spd) * 1.8; p.vy = (p.vy / spd) * 1.8; }
+
         p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
         ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
         ctx.fillStyle = ac; ctx.fill();
@@ -54,16 +72,17 @@
       for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
         const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
         if (d < 130) {
+          ctx.globalAlpha = (1 - d / 130) * 0.35;
           ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
-          ctx.strokeStyle = ac.replace(')', ',' + (1 - d / 130) * 0.35 + ')').replace('rgb', 'rgba');
-          ctx.lineWidth = 0.6; ctx.stroke();
+          ctx.strokeStyle = ac; ctx.lineWidth = 0.6; ctx.stroke();
         }
       }
+      ctx.globalAlpha = 1;
     }
 
     window.addEventListener('resize', initConst);
-    initConst();
-    setInterval(drawConst, 28);
+    /* lazy init au chargement complet (#13) */
+    window.addEventListener('load', () => { initConst(); setInterval(drawConst, 28); });
   }
 
   /* ═══════════════════════════════════════════════════════════
@@ -119,11 +138,26 @@
   }, { passive: true });
 
   /* ═══════════════════════════════════════════════════════════
-     7. BACK TO TOP
+     7. BACK TO TOP — anneau SVG (#8)
   ═══════════════════════════════════════════════════════════ */
-  const btt = document.createElement('button'); btt.id = 'back-to-top'; btt.innerHTML = '↑'; btt.title = 'Retour en haut';
+  const CIRCUM = 2 * Math.PI * 15; // ~94.25
+  const btt = document.createElement('button');
+  btt.id = 'back-to-top'; btt.title = 'Retour en haut';
+  btt.innerHTML = `<svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+    <circle cx="18" cy="18" r="15" stroke-width="1.5" class="btt-track"/>
+    <circle cx="18" cy="18" r="15" stroke-width="1.5" class="btt-ring"
+      stroke-dasharray="${CIRCUM} ${CIRCUM}" stroke-dashoffset="${CIRCUM}"
+      stroke-linecap="round" transform="rotate(-90 18 18)"/>
+    <path d="M12 21L18 14L24 21" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btt-arrow"/>
+  </svg>`;
   document.body.appendChild(btt);
-  window.addEventListener('scroll', () => btt.classList.toggle('visible', window.scrollY > 250), { passive: true });
+  const bttRing = btt.querySelector('.btt-ring');
+  window.addEventListener('scroll', () => {
+    const t = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = t > 0 ? window.scrollY / t : 0;
+    btt.classList.toggle('visible', window.scrollY > 250);
+    if (bttRing) bttRing.style.strokeDashoffset = CIRCUM * (1 - pct);
+  }, { passive: true });
   btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   /* ═══════════════════════════════════════════════════════════
@@ -142,9 +176,18 @@
   /* ═══════════════════════════════════════════════════════════
      9. COPIER L'EMAIL + TOAST
   ═══════════════════════════════════════════════════════════ */
-  document.getElementById('copy-email')?.addEventListener('click', () => {
+  /* #19 — bouton copie email : feedback visuel ✓ */
+  const copyBtn = document.getElementById('copy-email');
+  copyBtn?.addEventListener('click', function () {
     navigator.clipboard.writeText('charlie.roycosta@gmail.com')
-      .then(() => showToast('✓ Email copié !'))
+      .then(() => {
+        showToast('✓ Email copié !');
+        const prev = this.innerHTML;
+        this.innerHTML = '✓ Copié';
+        this.style.borderColor = 'var(--accent)';
+        this.style.color = 'var(--accent)';
+        setTimeout(() => { this.innerHTML = prev; this.style.borderColor = ''; this.style.color = ''; }, 2000);
+      })
       .catch(() => showToast('charlie.roycosta@gmail.com'));
   });
 
@@ -187,6 +230,35 @@
   document.querySelectorAll('[data-count]').forEach(el => co.observe(el));
 
   /* ═══════════════════════════════════════════════════════════
+     10. COMPTAGE DYNAMIQUE DES PROJETS
+  ═══════════════════════════════════════════════════════════ */
+  const statProj = document.querySelector('.stat-number[data-count="3"]');
+  if (statProj) {
+    fetch('projets.html').then(r => r.text()).then(html => {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      const n = tmp.querySelectorAll('.project-card:not(.placeholder)').length;
+      if (n > 0) statProj.dataset.count = n;
+    }).catch(() => {});
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     11. BARRES DE COMPÉTENCES — animation (#11)
+  ═══════════════════════════════════════════════════════════ */
+  const skillFills = document.querySelectorAll('.skill-bar-fill');
+  if (skillFills.length) {
+    const sbo = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.width = e.target.dataset.level + '%';
+          sbo.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    skillFills.forEach(el => sbo.observe(el));
+  }
+
+  /* ═══════════════════════════════════════════════════════════
      12. THÈME CLAIR / SOMBRE
   ═══════════════════════════════════════════════════════════ */
   const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -220,6 +292,17 @@
   function getAccentColor() {
     return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00ff88';
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     9. FAVICON ANIMÉ (curseur clignotant)
+  ═══════════════════════════════════════════════════════════ */
+  (function () {
+    const link = document.querySelector("link[rel='icon']");
+    if (!link) return;
+    const make = (cursor) => `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='14' fill='%2305050a'/%3E%3Ctext y='72' x='10' font-size='60' font-family='monospace' fill='%2300ff88'%3E${cursor}%3C/text%3E%3C/svg%3E`;
+    let on = true;
+    setInterval(() => { link.href = make(on ? '%3E_' : '%3E'); on = !on; }, 700);
+  })();
 
 
   /* ═══════════════════════════════════════════════════════════
@@ -291,6 +374,26 @@
     requestAnimationFrame(() => overlay.classList.add('show'));
   }
 
+
+  /* ═══════════════════════════════════════════════════════════
+     18. VALIDATION INLINE DU FORMULAIRE
+  ═══════════════════════════════════════════════════════════ */
+  (function () {
+    const nameEl  = document.getElementById('contact-name');
+    const emailEl = document.getElementById('contact-email');
+    const msgEl   = document.getElementById('contact-message');
+    function validate(el, check, msg) {
+      if (!el) return;
+      const err = el.parentElement?.querySelector('.field-error');
+      const ok = check(el.value.trim());
+      el.classList.toggle('valid', ok);
+      el.classList.toggle('invalid', !ok && el.value.length > 0);
+      if (err) err.textContent = (!ok && el.value.length > 0) ? msg : '';
+    }
+    nameEl?.addEventListener('input',  () => validate(nameEl,  v => v.length >= 2,          'Minimum 2 caractères.'));
+    emailEl?.addEventListener('input', () => validate(emailEl, v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'Email invalide.'));
+    msgEl?.addEventListener('input',   () => validate(msgEl,   v => v.length >= 10,         'Minimum 10 caractères.'));
+  })();
 
   /* ═══════════════════════════════════════════════════════════
      20. FORMULAIRE DE CONTACT (Supabase)
